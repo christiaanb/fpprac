@@ -14,10 +14,10 @@ data RoseTree = RoseNode String [RoseTree]
 
 ---------------schalingsfactoren--------------------------------
 
-verticaleftshift = 0.15
-leftshift        = 3
-horizontalfactor = 0.03
-letterheight     = 0.02
+verticaleftshift = 50.0
+leftshift        = 6.0
+horizontalfactor = 19.0
+letterheight     = 16.0
 
 ---------------breedte ve boom berekenen------------------------
 -- in principe: breedte = het aantal characters (fixed font)
@@ -26,7 +26,7 @@ letterheight     = 0.02
 -- opletten: ook bij de lege string een positieve treewidth (1) opleveren
 
 treewidth :: RoseTree -> Float
-treewidth (RoseNode a ts) = maximum [1.0, fromIntegral $ toInteger $ length a, sum (map treewidth ts)]
+treewidth (RoseNode a ts) = maximum [1.0, fromIntegral $ length a, sum (map treewidth ts)]
 
 
 ---------------coordinaten van de wortels ve (sub)boom----------
@@ -54,9 +54,9 @@ hor_poss midden ts                                      -- (x,y): midden
 --    loopt dat vlak van x=-1 tot x=+1, en van y=-1 tot y=+1).
 
 textgraphical :: (Float,Float) -> String -> Picture
-textgraphical (x,y) a = Translate xlabel y $ Scale 0.0005 0.0005 $ Color black $ Text a
+textgraphical (x,y) a = Translate xlabel (y - 12.0) $ Scale 0.1 0.1 $ Color black $ Text a
                       where
-                        xlabel = horizontalfactor * (x - (fromIntegral $ toInteger $ length a) / leftshift)
+                        xlabel = horizontalfactor * (x - (fromIntegral $ length a) / leftshift)
 
 linegraphical :: (Float,Float) -> (Float,Float) -> Picture
 linegraphical (x,y) (x1,y1) = Color red $ Line [(horizontalfactor*x,y), (horizontalfactor*x1,y1)]
@@ -93,7 +93,7 @@ drawTreeList ((x,y), ts)
 startpuntMainRoot = (0, 0.9)         -- midden bovenaan het scherm
 
 showTreeList :: [RoseTree] -> IO ()
-showTreeList ts = graphicsout $ Scale 200 200 $ drawTreeList (startpuntMainRoot, ts)
+showTreeList ts = graphicsout $ drawTreeList (startpuntMainRoot, ts)
 
 showTree :: RoseTree -> IO ()
 showTree t = showTreeList [t]
@@ -128,22 +128,3 @@ exampleTree = RoseNode "p"
                                                ]
                                     ]
                         ]
-
--- ======kleuren=================================================
-
-zwart       =  0
-marineblauw =  1
-groen       =  2
-zeegroen    =  3
-oxblood     =  4
-paars       =  5
-olijfgroen  =  6
-lichtgrijs  =  7
-donkergrijs =  8
-blauw       =  9
-lichtgroen  = 10
-turquoise   = 11
-rood        = 12
-lichtpaars  = 13
-geel        = 14
-wit         = 15
