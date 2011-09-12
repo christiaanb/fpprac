@@ -1,0 +1,86 @@
+\documentclass[]{article}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+
+% Setup for fullpage use
+\usepackage{fullpage}
+
+% Package for including code in the document
+\usepackage{listings}
+
+\usepackage{url}
+\usepackage[pdftex]{graphicx}
+
+\title{Manual for the Haskell Environment}
+\author{Christiaan Baaij}
+
+\date{Kwartiel 1, 2011}
+
+\begin{document}
+
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+
+\maketitle
+
+\section{Introduction}
+Haskell is a well-known non-strict functional programming language, and is available on all major platforms. A notice to all students using the Haskell environment instead of the Amanda environment: you are only allowed to reference functions equivalent to the Amanda built-in functions on the final exam!
+
+\section{Installation}
+This section describes the installation procedure for the Haskell environment used in the functional programming course. Students deviating from this procedure will not get any support from the teaching assistants or teacher if any problems with the Haskell environment occur. The installation consists of a part equal to all platforms, and a part specific to each platform.
+
+\subsection{For all platforms}
+\begin{itemize}
+  \item Download the \emph{Haskell Platform}, version 2011.2.0.1, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if no 32-bit version is available for your platform! 
+  \item Follow the installation instructions of the Haskell Platform.
+  \item Download, but do NOT install, the \verb!gloss-glfw! and \verb!fpprac! package from \url{http://github.com/christiaanb/gloss-glfw/} and \url{http://github.com/christiaanb/fpprac/} respectively.
+  \item Unpack the two packages in separate directories.
+\end{itemize}
+
+\subsection{Windows XP/Vista/7 (tested on: XP SP3, Win7 SP1 64-bit)}
+\begin{itemize}
+  \item Download the \verb!glut32.dll! (use google), and put it in your \verb!%SystemRoot%\System32! directory.
+  \item Make sure that the \verb!cabal! executable can be found in your \verb!%PATH%! (should be done by the \emph{Haskell Platform} Installation), and run \verb!cabal update! from the command line.
+  \item Open in your favorite text editor \verb!appdata/cabal/config!, where \verb!appdata! depends on your system, but is usually something like \verb!C:\Documents and Settings\user\Application Data\!.
+  \item Uncomment the \verb!documention! line, and set it to \verb!True!. Save the file.
+  \item From the command line, go to the directory where you unpacked the \verb!gloss-glfw! package, and run: \verb!cabal install!.
+  \item Now go to the directory where you unpacked the \verb!fpprac! packaged, and run: \verb!cabal install!.
+  \item Open (or create if it does not exist) in your favorite text editor \verb!appdata/ghc/ghci.conf!.
+  \item Add the following two lines to this file, and save it:
+  \begin{description}
+    \item[] \verb!:set -XNoMonomorphismRestriction!
+    \item[] \verb!:set -XNoImplicitPrelude!
+  \end{description}
+\end{itemize}
+
+\subsection{OS X 10.6 (tested on: OS X 10.6.8)}
+\begin{itemize}
+  \item Make sure that the \verb!cabal! binary can be found in your \verb!$PATH! (should be done by the \emph{Haskell Platform} Installation), and run \verb!cabal update! from the command line.
+  \item Go to the directory where you unpacked the \verb!gloss-glfw! package, and run: \verb!cabal install -f GLFW!.
+  \item Now go to the directory where you unpacked the \verb!fpprac! packaged, and run: \verb!cabal install!.
+  \item Open (or create if it does not exist) in your favorite text editor \verb!$HOME/.ghci!.
+  \item Add the following four lines to this file:
+  \begin{description}
+    \item[] \verb!:set -XNoMonomorphismRestriction!
+    \item[] \verb!:set -XNoImplicitPrelude!
+    \item[] \verb!:set -fno-ghci-sandbox!
+    \item[] \verb!:set -framework Carbon!
+  \end{description}
+\end{itemize}
+
+\section{Using the environment}
+We will mostly use the interpreter offered by the Glasgow Haskell Compiler. You can start the interpreter by running \verb!ghci! from the command line. You can immediately evaluate expressions in the interpreter. You can load files using the \verb!:l! command, e.g.: \verb!:l ~/FP/prac1.hs!. If you changed a file that is loaded in the interpreter, you can reload it by typing \verb!:r!. Instead of opening the interpreter and then loading the file, you can also immediately call the interpreter with the file you want to open, e.g.: \verb!ghci ~/FP/prac1.hs!. As suggested by the examples, make sure that all your files end with the extension ".hs".
+
+You always start a new module with the line "\verb!module ModuleName where!". A module may use definitions from other modules by including a line "\verb!import ModuleName"!. Always make sure that you at least import the \verb!fpprac! prelude in any file that you create by adding the line "\verb!import FPPrac!". Imports must be placed before any other definitions.
+
+The symbols \verb!--! comments the rest of a line; multi-line comments are enclosed by \verb!{-! and \verb!-}!. Haskell does not have prefix operators, so the ask the length of a list you have to use the \verb!length! function. Functions are made infix using backquotes: \verb!12 `div` 3!.
+
+As Haskell is a well-known functional programming language many editors should have support (such as syntax-highlighting) for it. Editors that definitely have support for Haskell are: \emph{Vim, Emacs, TextMate, Sublime Text}. 
+
+\section{Advanced Users}
+If you understand what \emph{Type Classes} are, and you want to use the default Haskell numeric datatypes, instead of the \verb!Number! type provided by the \verb!fpprac! package, remove the line "\verb!:set -XNoImplicitPrelude!" from your \verb!ghci! configuration file. You should also no longer import the \emph{FPPrac} module in your files. 
+
+\section{More Information}
+When installing the Haskell platform, API documentation for all the libraries that came with it, should be included. And, if you followed, the installation instructions, API documentation for the \verb!fpprac! should be automatically added. The location is of this file is found in your \verb!cabal! configuration file (\emph{doc-index-file}). Lots of information about Haskell can of course be found on: \url{http://haskell.org}.
+
+\end{document}
