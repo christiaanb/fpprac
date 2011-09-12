@@ -21,10 +21,13 @@ data Input = NoInput
 	deriving (Eq,Show)
 
 eventToInput (EventKey (Char x) 								Down _ _) = KeyIn x
+eventToInput (EventKey (SpecialKey  KeySpace)   Down _ p) = KeyIn ' '
+eventToInput (EventKey (SpecialKey  KeyTab)     Down _ p) = KeyIn '\t'
+eventToInput (EventKey (SpecialKey  KeyEnter)   Down _ p) = KeyIn '\n'
 eventToInput (EventKey (MouseButton LeftButton) Down _ p) = MouseDown p
 eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
 eventToInput (EventMotion p)															= MouseDragged p
-eventToInput _                                            = NoInput
+eventToInput e                                            = NoInput
 
 eventHandler ::
   String
