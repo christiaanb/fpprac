@@ -4,6 +4,7 @@ module RBgraphics where
 -- Jan Kuper, 5 mei 2008
 -- ============================================================================
 import FPPrac.Graphics
+import Prelude
 
 data RbTreeG = RBnode Color String [RbTreeG]
   deriving Eq

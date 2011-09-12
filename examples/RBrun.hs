@@ -7,6 +7,7 @@ module RBrun where
 import FPPrac.Events
 import FPPrac.Graphics
 import RBgraphics
+import Prelude
 
 -- ============= types ========================================================
 -- RBnode c v ts:   c=colour, v=value, ts=subtrees
@@ -25,9 +26,9 @@ main = eventHandler "RBrun" doE initstate
 
 ---- ============= event handler ================================================
 
-doE :: StateTp -> Event -> (StateTp, Maybe Picture)
-doE s (KeyIn 'm') = (s {mode  = not (mode s)}, Just (drawTrees (not (mode s)) 150 (rbts s)))
-doE s e           = (s, Just (drawTrees (not (mode s)) 150 (rbts s)))
+doE :: StateTp -> Input -> (StateTp, Maybe Picture)
+doE s (KeyIn 'm') = (s {mode  = not (mode s)}, Just (drawTrees (not (mode s)) 200 (rbts s)))
+doE s e           = (s, Just (drawTrees (not (mode s)) 200 (rbts s)))
 
 -- ======voorbeeldboom=========================================================
 -- Let op: deze boom is slechts ter illustratie van de grafische weergave,
@@ -55,7 +56,7 @@ exampleTree = RBnode black "9"
                                                 ]
                                        , RBnode red "pp"
                                                 [ RBnode black "r" [ RBnode red "nn" []
-                                                               , RBnode  (light black)  "" []
+                                                               , RBnode  (dark $ dark white)  "" []
                                                                ]
                                                 , RBnode black "r" [ RBnode red "nn" []
                                                                , RBnode  (dark white)  "" []

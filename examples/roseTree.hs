@@ -6,6 +6,7 @@ module RoseTree where
 --
 -- Jan Kuper, 10 januari 2003
 
+import Prelude
 import FPPrac.Graphics
 
 ---------------boomtype-----------------------------------------
@@ -15,7 +16,7 @@ data RoseTree = RoseNode String [RoseTree]
 ---------------schalingsfactoren--------------------------------
 
 verticaleftshift = 50.0
-leftshift        = 6.0
+leftshift        = 5.0
 horizontalfactor = 19.0
 letterheight     = 16.0
 
@@ -90,7 +91,7 @@ drawTreeList ((x,y), ts)
 -- schalingsfactoren zijn op elkaar afgestemd. Verandering daarvan
 -- kan de netheid van de output beinvloeden.
 
-startpuntMainRoot = (0, 0.9)         -- midden bovenaan het scherm
+startpuntMainRoot = (0, 200)         -- midden bovenaan het scherm
 
 showTreeList :: [RoseTree] -> IO ()
 showTreeList ts = graphicsout $ drawTreeList (startpuntMainRoot, ts)
@@ -101,7 +102,7 @@ showTree t = showTreeList [t]
 
 -- ======voorbeeldboom===========================================
 
-exampleTree = RoseNode "p"
+exampleTree = RoseNode "z"
                         [ RoseNode "aaa"
                                     [ RoseNode "bbb"
                                                 [ RoseNode "ccc" [],

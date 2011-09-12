@@ -21,6 +21,8 @@ import qualified Prelude as P
 
 import FPPrac.Prelude.Number
 
+default ()
+
 (!) :: [a] -> Number -> a
 xs ! (I i) = xs !! (fromInteger i)
 

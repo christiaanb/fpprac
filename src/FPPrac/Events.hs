@@ -1,37 +1,45 @@
 module FPPrac.Events
-  ( Event (..)
+  ( module Graphics.Gloss.Interface.Game
+  , Input (..)
   , eventHandler
   )
 where
 
 import Data.Maybe (fromMaybe)
 import FPPrac.Graphics
-import qualified Graphics.Gloss.Interface.Game as Gloss
+import Graphics.Gloss.Interface.Game
 
 data EventState a = EventState { picture   :: Picture
                                , userState :: a
                                }
 
-data Event = NoInput
-           | KeyIn Char
+data Input = NoInput
+           | KeyIn 				Char
+					 | MouseDown    (Float,Float)
+					 | MouseUp      (Float,Float)
+					 | MouseDragged (Float,Float)
+	deriving (Eq,Show)
 
-inputToEvent (Gloss.EventKey (Gloss.Char x) Gloss.Down _ _) = KeyIn x
-inputToEvent _                                              = NoInput
+eventToInput (EventKey (Char x) 								Down _ _) = KeyIn x
+eventToInput (EventKey (MouseButton LeftButton) Down _ p) = MouseDown p
+eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
+eventToInput (EventMotion p)															= MouseDragged p
+eventToInput _                                            = NoInput
 
 eventHandler ::
   String
-  -> (a -> Event -> (a, Maybe Picture))
+  -> (a -> Input -> (a, Maybe Picture))
   -> a
   -> IO ()
-eventHandler name handler initState = Gloss.gameInWindow
+eventHandler name handler initState = gameInWindow
   name
-  (640,480)
+  (800,600)
   (20,20)
   white
   50
-  (EventState Gloss.Blank initState)
+  (EventState Blank initState)
   picture
-  (\e s -> let (s',g) = handler (userState s) (inputToEvent e)
+  (\e s -> let (s',g) = handler (userState s) (eventToInput e)
            in  EventState (fromMaybe (picture s) g) s')
   (\t s -> let (s',g) = handler (userState s) NoInput
            in  EventState (fromMaybe (picture s) g) s')

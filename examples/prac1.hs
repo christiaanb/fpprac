@@ -1,4 +1,3 @@
-
 import FPPrac
 
 -- Opgave 1
@@ -72,6 +71,34 @@ myzip [] ys         = []
 myzip xs []         = []
 myzip (x:xs) (y:ys) = (x,y) : myzip xs ys
 
-test = [1,2,3,4]
+-- Opgave 7
+r s v = s : r (s+v) v
 
-equal f1 f2 = f1 test == f2 test
+r1 s v n = (r s v)!!n
+
+totaal s v a b = sum $ take (b - a) $ drop a $ r s v
+
+-- Opgave 8
+allEqual [x]      = True
+allEqual (x:y:xs) = x == y && allEqual (y:xs)
+
+allRR = allEqual . verschil
+	where
+		verschil [x] = []
+		verschil (x:y:ys) = (x-y) : verschil (y:ys)
+
+-- Opgave 9
+testMatrix = [ [1,3,4]
+						 , [5,6,7]
+						 , [8,9,10]
+						 ]
+
+equalLength = allEqual . map length
+
+rowTotals   = map sum
+
+myTranspose = foldr f (repeat [])
+	where
+		f as bss = zipWith (:) as bss
+
+columnTotals = map sum . myTranspose 
