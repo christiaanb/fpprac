@@ -1,7 +1,11 @@
+-- | The event mode lets you manage your own input. 
+-- Pressing ESC will still abort the program, but you don't get automatic 
+-- pan and zoom controls like with graphicsout. Should only be called once
+-- during the execution of a program!
 module FPPrac.Events
   ( module Graphics.Gloss.Interface.Game
   , Input (..)
-  , eventHandler
+  , installEventHandler
   )
 where
 
@@ -12,7 +16,7 @@ import Graphics.Gloss.Interface.Game
 data EventState a = EventState { picture   :: Picture
                                , userState :: a
                                }
-
+-- | Possible input events
 data Input = NoInput
            | KeyIn 				Char
 					 | MouseDown    (Float,Float)
@@ -29,12 +33,16 @@ eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
 eventToInput (EventMotion p)															= MouseDragged p
 eventToInput e                                            = NoInput
 
-eventHandler ::
-  String
-  -> (a -> Input -> (a, Maybe Picture))
-  -> a
+-- | The event mode lets you manage your own input. 
+-- Pressing ESC will still abort the program, but you don't get automatic 
+-- pan and zoom controls like with graphicsout. Should only be called once
+-- during the execution of a program!
+installEventHandler ::
+  String -- ^ Name of the window
+  -> (userState -> Input -> (userState, Maybe Picture)) -- ^ Event handler that takes current state, input, and returns new state and maybe an updated picture
+  -> userState -- ^ Initial state of the program
   -> IO ()
-eventHandler name handler initState = gameInWindow
+installEventHandler name handler initState = gameInWindow
   name
   (800,600)
   (20,20)

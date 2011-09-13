@@ -1,6 +1,11 @@
 module FPPrac.Prelude.Number
+	( Number(..)
+	, atoi
+	, atof
+	)
 where
 
+-- | Combined integral and floating number type
 data Number
   = I Integer
   | F Float
@@ -115,3 +120,11 @@ instance Floating Number where
   atanh (I i)           = F (atanh $ fromIntegral i)
   acosh (F f)           = F (acosh f)
   acosh (I i)           = F (acosh $ fromIntegral i)
+
+-- | Converts a String to an Integral Number
+atoi :: String -> Number
+atoi = I . read
+
+-- | Converts a String to a Floating Number
+atof :: String -> Number
+atof = F . read

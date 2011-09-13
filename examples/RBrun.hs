@@ -20,7 +20,7 @@ initstate = StateTp { mode = False
                     , rbts = [ exampleTree, exampleTree, exampleTree ]
                     }
 
-main = eventHandler "RBrun" doE initstate
+main = installEventHandler "RBrun" doE initstate
    where
       StateTp { mode = m, rbts = ts} = initstate
 
