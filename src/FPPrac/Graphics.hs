@@ -14,7 +14,7 @@ import qualified Graphics.Gloss as Gloss
 -- 
 --   Use the following commands once the window is open:
 --
--- 	* Quit - esc-key.
+-- 	* Close Window - esc-key.
 --
 --	* Move Viewport - left-click drag, arrow keys.
 --

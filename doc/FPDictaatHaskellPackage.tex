@@ -1,0 +1,75 @@
+\section{FPPrac Package and Graphical Environment}
+
+The \texttt{fpprac} package that is part of the Haskell Environment for this course exports the following modules:
+\begin{description}
+  \item[FPPrac] Only exports \texttt{FPPrac.Prelude}
+  \item[FPPrac.Prelude] Defines \texttt{Number}, a combined integral and floating number type, and corresponding instances of most numeric type classes (\texttt{Num}, \texttt{Real}, \texttt{Integral}, \texttt{Fractional}, \texttt{RealFrac}, \texttt{Floating}). 
+  Also defines (non-type class) functions normally found in \texttt{Prelude} that either have arguments or a result of a standard Haskell numeric type, but will now use an argument of type \texttt{Number} in that position. 
+  For example: the function  \texttt{take} is given type \texttt{Number -> [a] -> [a]} instead of the \texttt{Int -> [a] -> [a]}.
+  It reexports all the other functions of \texttt{Prelude} that do not fall under the above mentioned category.
+  \item[FPPrac.Graphics] Exports the \texttt{Graphics.Gloss} module from the \texttt{gloss-glfw} package, and defines the \texttt{graphicsout} function which can display a value of type \texttt{Picture} on the screen.
+  \item[FPPrac.Events] Exports the \texttt{Graphics.Gloss.Interface.Game} module from the \texttt{gloss-glfw} package, and defines the \texttt{installEventHandler} function that passer keyboard/mouse input to a user-defined function, and displays the picture returned by that same function on the screen. 
+\end{description}
+
+\subsection{FPPrac.Prelude}
+The following functions using a value of type \texttt{Number} as either an argument or result are exported by \texttt{FPPrac.Prelude}:
+\begin{itemize}
+  \item \verb!length :: [a] -> Number! -- \texttt{length} returns the length of a finite list as a \texttt{Number}
+  \item \verb|(!!) :: [a] -> Number -> a| -- List index (subscript) operator, starting from 0.
+  \item \verb!replicate :: Number -> a -> [a]! -- \texttt{replicate n x} is a list of length \texttt{n} with \texttt{x} the value of every element.
+  \item \verb!take :: Number -> [a] -> [a]! -- \texttt{take n}, applied to a list \texttt{xs}, returns the prefix of \texttt{xs} of length \texttt{n}, or \texttt{xs} itself if \texttt{n > length xs}.
+  \item \verb!drop :: Number -> [a] -> [a]! -- \texttt{drop n}, applied to a list \texttt{xs}, returns the suffix of \texttt{xs} after the first \texttt{n} elements, or \texttt{[]} if \texttt{n > length xs}.
+  \item \verb!splitAt :: Number -> [a] -> ([a],[a])! -- \texttt{splitAt n xs} returns a tuple where first element is \texttt{xs} prefix of length \texttt{n} and second element is the remainder of the list.
+\end{itemize}
+
+\subsection{Graphics}
+\subsubsection{graphicsout}
+The \texttt{graphicsout} function, which has type \texttt{Picture -> IO ()}, opens a new window and displays the given picture. 
+It should only be called once during the execution of a program, and should be called at the highest point in your function hierarchy!
+You can use the following commands once the window is open:
+\begin{description}
+  \item[Close Window] -- esc-key
+  \item[Move Viewport] -- left-click drag, arrow keys.
+  \item[Rotate Viewport] -- right-click drag, control-left-click drag, or home\/end-keys.
+  \item[Zoom Viewport] -- mouse wheel, or page up\/down-keys.
+\end{description}
+
+\subsubsection{Picture type}
+The \texttt{Picture} datatype has the following constructors:
+\begin{description}
+  \item[Blank] -- A blank picture, with nothing in it.
+  \item[Polygon Path] --  A polygon filled with a solid color.
+  \item[Line Path] --  A line along an arbitrary path.
+  \item[Circle Float] --  A circle with the given radius.
+  \item[ThickCircle Float Float] -- A circle with the given thickness and radius. If the thickness is 0 then this is equivalent to Circle.
+  \item[Text String] -- Some text to draw with a vector font.
+  \item[Bitmap Int Int ByteString] -- A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data.
+  \item[Color Color Picture] -- A picture drawn with this color.
+  \item[Translate Float Float Picture] -- A picture translated by the given x and y coordinates.
+  \item[Rotate Float Picture] -- A picture rotated by the given angle (in degrees).
+  \item[Scale Float Float Picture] -- A picture scaled by the given x and y factors.
+  \item[Pictures {[Picture]}] -- A picture consisting of several others. 
+\end{description}
+Where \texttt{Path} is a list of points, \texttt{[Point]}, and \texttt{Point} is a tuple of an x and a y coordinate, \texttt{(Float,Float)}. The picture uses a Cartesian coordinate system (\url{http://en.wikipedia.org/wiki/Cartesian_coordinate_system}), where the floating point value 1.0 is equivalent to the width of 1 pixel on the screen. 
+The window created by either \texttt{graphicsOut} or \texttt{installEventHandler} is 800 by 600 pixels, so the visible coordinates run from -400 to +400 on the X-axis, and -300 to +300 on the Y-axis. 
+You can enlarge or decrease the visible range by scaling the window.
+A picture is will have (0,0) as its original center, and if required, will have to be moved to a different position using the \texttt{Translate} constructor. 
+
+Predefined values of type \texttt{Color} are: \texttt{black}, \texttt{white}, \texttt{red}, \texttt{green}, \texttt{blue}, \texttt{yellow}, \texttt{cyan}, \texttt{magenta}, \texttt{rose}, \texttt{violet}, \texttt{azure}, \texttt{aquamarine}, \texttt{chartreuse}, \texttt{orange}.  
+More information about the \texttt{Color} type can be found in the API documentation that is generated when you install the Haskell Environment.
+
+\subsection{Events}
+\subsubsection{installEventHandler}
+The event mode lets you manage your own input. Pressing ESC will still close the window, but you don't get automatic pan and zoom controls like with \texttt{graphicsout}. You should only call \texttt{installEventHandler} once during the execution of a program, and should be called at the highest point in your function hierarchy! The \texttt{installEventHandler} is of type: \texttt{forall userState . => String -> (userState -> Input -> (userState,Maybe Picture)) -> userState -> IO ()}. The first argument is the name of the window, the second argument is the event handler that you want to install, and the third argument the initial state of the event handler. Your event handler should be a function that takes to arguments: a self-defined internal state, and a value of type \texttt{Input}. It should return an updated state, and a value of \texttt{Maybe Picture}. If this value is \texttt{Nothing}, the current picture remains on the screen; if this value is \verb!Just <new_picture>!, the picture on the screen will be replaced with the one defined by the contents of \verb!<new_picture>!. Your event-handler will be called 50 times per second, and will be passed a value of \texttt{NoInput} if there is no input at that time.
+
+\subsubsection{Input type}
+The \texttt{Input} datatype has the following constructors:
+\begin{description}
+  \item[NoInput] -- No input 
+  \item[KeyIn Char] -- Keyboard key x is pressed down; \texttt{' '} for spacebar, \texttt{\textbackslash{}t} for tab, \texttt{\textbackslash{}n} for enter
+  \item[MouseDown (Float,Float)] -- Left mouse button is pressed at location (x,y)
+  \item[MouseDown (Float,Float)] -- Left mouse button is released at location (x,y)
+  \item[MouseMotion (Float,Float)] -- Mouse pointer is moved to location (x,y)
+\end{description}
+
+

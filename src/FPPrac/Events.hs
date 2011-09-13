@@ -1,6 +1,7 @@
+{-# LANGUAGE RankNTypes #-}
 -- | The event mode lets you manage your own input. 
--- Pressing ESC will still abort the program, but you don't get automatic 
--- pan and zoom controls like with graphicsout. Should only be called once
+-- Pressing ESC will still closes the window, but you don't get automatic 
+-- pan and zoom controls like with 'graphicsout'. Should only be called once
 -- during the execution of a program!
 module FPPrac.Events
   ( module Graphics.Gloss.Interface.Game
@@ -17,11 +18,16 @@ data EventState a = EventState { picture   :: Picture
                                , userState :: a
                                }
 -- | Possible input events
-data Input = NoInput
-           | KeyIn 				Char
-					 | MouseDown    (Float,Float)
-					 | MouseUp      (Float,Float)
-					 | MouseDragged (Float,Float)
+data Input -- | No input
+					 = NoInput
+					 -- | Keyboard key x is pressed down; ' ' for space, \\t for tab, \\n for enter
+           | KeyIn 			 Char
+					 -- | Left mouse button is pressed at location (x,y)
+					 | MouseDown   (Float,Float)
+					 -- | Left mouse button is released at location (x,y)
+					 | MouseUp     (Float,Float)
+					 -- | Mouse pointer is moved to location (x,y)
+					 | MouseMotion (Float,Float)
 	deriving (Eq,Show)
 
 eventToInput (EventKey (Char x) 								Down _ _) = KeyIn x
@@ -30,7 +36,7 @@ eventToInput (EventKey (SpecialKey  KeyTab)     Down _ p) = KeyIn '\t'
 eventToInput (EventKey (SpecialKey  KeyEnter)   Down _ p) = KeyIn '\n'
 eventToInput (EventKey (MouseButton LeftButton) Down _ p) = MouseDown p
 eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
-eventToInput (EventMotion p)															= MouseDragged p
+eventToInput (EventMotion p)															= MouseMotion p
 eventToInput e                                            = NoInput
 
 -- | The event mode lets you manage your own input. 
@@ -38,7 +44,8 @@ eventToInput e                                            = NoInput
 -- pan and zoom controls like with graphicsout. Should only be called once
 -- during the execution of a program!
 installEventHandler ::
-  String -- ^ Name of the window
+  forall userState
+  . String -- ^ Name of the window
   -> (userState -> Input -> (userState, Maybe Picture)) -- ^ Event handler that takes current state, input, and returns new state and maybe an updated picture
   -> userState -- ^ Initial state of the program
   -> IO ()

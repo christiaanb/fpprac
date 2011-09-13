@@ -25,7 +25,7 @@ import FPPrac.Prelude.Number
 default ()
 infixl 9 !!
 
--- | /O(n)/. 'length' returns the length of a finite list as an 'Int'.
+-- | /O(n)/. 'length' returns the length of a finite list as a 'Number'.
 length :: [a] -> Number
 length = I . toInteger . P.length
 
