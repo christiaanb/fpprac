@@ -4,7 +4,18 @@ where
 data Number
   = I Integer
   | F Float
-  deriving (Eq,Ord)
+
+instance Eq Number where
+	(I i1) == (I i2) = i1 == i2
+	(F f1) == (F f2) = f1 == f2
+	(I i1) == (F f2) = fromIntegral i1 == f2
+	(F f1) == (I i2) = f1 == fromIntegral i2
+
+instance Ord Number where
+	compare (I i1) (I i2) = compare i1 i2
+	compare (F f1) (F f2) = compare f1 f2
+	compare (I i1) (F f2) = compare (fromIntegral i1) f2
+	compare (F f1) (I i2) = compare f1 (fromIntegral i2)
 
 instance Show Number where
   show (I i) = show i
