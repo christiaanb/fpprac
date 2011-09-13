@@ -1,7 +1,9 @@
 \documentclass[]{article}
 
 % Use utf-8 encoding for foreign characters
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
 
 % Setup for fullpage use
 \usepackage{fullpage}
@@ -24,63 +26,131 @@
 \maketitle
 
 \section{Introduction}
-Haskell is a well-known non-strict functional programming language, and is available on all major platforms. A notice to all students using the Haskell environment instead of the Amanda environment: you are only allowed to reference functions equivalent to the Amanda built-in functions on the final exam!
+Haskell is a well-known non-strict functional programming language, and is available on all major platforms.
+Students are allowed to use the Haskell environment for the lab exercises, but it is not compulsory: you are certainly allowed to keep on using the Amanda environment.
+We even warn you that especially the graphical environment used in the Haskell environment \emph{might} be a bit unstable!
+
+The Haskell environment for the functional programing course consists of three parts, which all need to be installed.
+The first part is the \emph{Haskell Platform}, which contains the Glasgow Haskell Compiler (and Interpreter), and a set of standard libraries and tools. 
+Among these tools is \emph{cabal}, which is Haskell's own package manager. The second part is the \texttt{gloss-glfw} package, which is a cross-platform, usable from the GHC Interpreter (GHCi), graphics library based on OpenGL.
+It is used by the third part: the \texttt{fpprac} package. The \texttt{fpprac} defines the \emph{Number} type (like Amanda's \emph{num} type), which hides the intricacies of Haskell's \emph{Type Classes} from new users.
+Later on, when a you have a better understanding of Haskell (and \emph{Type Classes}), you can omit using this \emph{Number} type, and use Haskell's own default numeric types.
+The \texttt{fpprac} package also defines (in module \emph{FPPrac.Graphics}) the \emph{graphicsout} function which displays a value of type \emph{Picture}. Additionally, the module \emph{FPPrac.Events} defines the \emph{eventHandler} which forwards keyboard/mouse input to a user-defined function, and displays the picture returned by that same user-defined function.
+
+A notice to all students using the Haskell environment instead of the Amanda environment: you are only allowed to reference functions equivalent to the Amanda built-in functions on the final exam! 
+During the lab exercises, and the final assignment(s), you can only use the standard \emph{Prelude} module, and/or, the modules exported by the \texttt{fpprac} package: (\emph{FPPrac, FPPrac.Prelude, FPPrac.Events, FPPrac.Graphics}).
+If you want to deviate from only using the sanctioned modules, and think you have a good (didactically sound) reason, ask for permission from the teaching assistants first.
 
 \section{Installation}
-This section describes the installation procedure for the Haskell environment used in the functional programming course. Students deviating from this procedure will not get any support from the teaching assistants or teacher if any problems with the Haskell environment occur. The installation consists of a part equal to all platforms, and a part specific to each platform.
+This section describes the installation procedure for the Haskell environment used in the functional programming course. Students deviating from this procedure will not get any support from the teaching assistants or teacher if any problems with the Haskell environment occur.
+The installation consists of a part equal for all platforms, and a part specific for each platform.
 
 \subsection{For all platforms}
 \begin{itemize}
   \item Download the \emph{Haskell Platform}, version 2011.2.0.1, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if no 32-bit version is available for your platform! 
-  \item Follow the installation instructions of the Haskell Platform.
-  \item Download, but do NOT install, the \verb!gloss-glfw! and \verb!fpprac! package from \url{http://github.com/christiaanb/gloss-glfw/} and \url{http://github.com/christiaanb/fpprac/} respectively.
+  \item Follow the installation instructions of the Haskell Platform; Linux users: read the footnote\footnote{If version 2011.2.0.1 of the Haskell Platform is not included in your package manager (as is the case with Ubuntu 11.04), follow the instructions found on the Haskell Platform page to install GHC 7.0.3 manually, followed by a manual install (from source) of the Haskell Platform tools and libraries.
+To install GHC 7.0.3 and Haskell Platform 2011.2.0.1 on Ubuntu 11.04 you need the following libraries: \texttt{libgmp3-dev}, \texttt{libz-dev}, \texttt{libgl1-mesa-dev}, \texttt{libglu-dev}, and \texttt{freeglut3-dev}.}.
+  \item Download, but do NOT install, the \texttt{gloss-glfw} and \texttt{fpprac} package from \url{http://github.com/christiaanb/gloss-glfw/} and \url{http://github.com/christiaanb/fpprac/} respectively.
   \item Unpack the two packages in separate directories.
 \end{itemize}
 
 \subsection{Windows XP/Vista/7 (tested on: XP SP3, Win7 SP1 64-bit)}
 \begin{itemize}
-  \item Download the \verb!glut32.dll! (use google), and put it in your \verb!%SystemRoot%\System32! directory.
-  \item Make sure that the \verb!cabal! executable can be found in your \verb!%PATH%! (should be done by the \emph{Haskell Platform} Installation), and run \verb!cabal update! from the command line.
-  \item Open in your favorite text editor \verb!appdata/cabal/config!, where \verb!appdata! depends on your system, but is usually something like \verb!C:\Documents and Settings\user\Application Data\!.
-  \item Uncomment the \verb!documention! line, and set it to \verb!True!. Save the file.
-  \item From the command line, go to the directory where you unpacked the \verb!gloss-glfw! package, and run: \verb!cabal install!.
-  \item Now go to the directory where you unpacked the \verb!fpprac! packaged, and run: \verb!cabal install!.
-  \item Open (or create if it does not exist) in your favorite text editor \verb!appdata/ghc/ghci.conf!.
+  \item Download the \texttt{glut32.dll} (\url{http://www.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows).
+  \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Open, in your favorite text editor, \texttt{\%appdata\%\textbackslash{}cabal\textbackslash{}config} (where \texttt{\%appdata\%} depends on your system but is usually something like \texttt{C:\textbackslash{}Documents and Settings\textbackslash{}<user>\textbackslash{}Application Data\textbackslash{}}).
+  \item Uncomment the \texttt{documention} line, and set it to \texttt{True}. Save the file.
+  \item From the command line, go to the directory where you unpacked the \texttt{gloss-glfw} package, and run: \texttt{cabal install}.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run: \texttt{cabal install}.
+  \item Open (or create if it does not exist) in your favorite text editor \texttt{\%appdata\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
   \item Add the following two lines to this file, and save it:
   \begin{description}
-    \item[] \verb!:set -XNoMonomorphismRestriction!
-    \item[] \verb!:set -XNoImplicitPrelude!
+    \item[] \texttt{:set -XNoMonomorphismRestriction}
+    \item[] \texttt{:set -XNoImplicitPrelude}
   \end{description}
 \end{itemize}
 
 \subsection{OS X 10.6 (tested on: OS X 10.6.8)}
 \begin{itemize}
-  \item Make sure that the \verb!cabal! binary can be found in your \verb!$PATH! (should be done by the \emph{Haskell Platform} Installation), and run \verb!cabal update! from the command line.
-  \item Go to the directory where you unpacked the \verb!gloss-glfw! package, and run: \verb!cabal install -f GLFW!.
-  \item Now go to the directory where you unpacked the \verb!fpprac! packaged, and run: \verb!cabal install!.
-  \item Open (or create if it does not exist) in your favorite text editor \verb!$HOME/.ghci!.
-  \item Add the following four lines to this file:
+  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Open, in your favorite text editor, \texttt{\$HOME/.cabal/config} and make sure the \texttt{documentation} line is uncommented and set to \texttt{True}. If this is not the case, change the file accordingly, and save.
+  \item Go to the directory where you unpacked the \texttt{gloss-glfw} package, and run: \texttt{cabal install -f GLFW}.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run: \texttt{cabal install}.
+  \item Open (or create if it does not exist) in your favorite text editor \texttt{\$HOME/.ghci}.
+  \item Add the following four lines to this file, and save it:
   \begin{description}
-    \item[] \verb!:set -XNoMonomorphismRestriction!
-    \item[] \verb!:set -XNoImplicitPrelude!
-    \item[] \verb!:set -fno-ghci-sandbox!
-    \item[] \verb!:set -framework Carbon!
+    \item[] \texttt{:set -XNoMonomorphismRestriction}
+    \item[] \texttt{:set -XNoImplicitPrelude}
+    \item[] \texttt{:set -fno-ghci-sandbox}
+    \item[] \texttt{:set -framework Carbon}
   \end{description}
 \end{itemize}
 
-\section{Using the environment}
-We will mostly use the interpreter offered by the Glasgow Haskell Compiler. You can start the interpreter by running \verb!ghci! from the command line. You can immediately evaluate expressions in the interpreter. You can load files using the \verb!:l! command, e.g.: \verb!:l ~/FP/prac1.hs!. If you changed a file that is loaded in the interpreter, you can reload it by typing \verb!:r!. Instead of opening the interpreter and then loading the file, you can also immediately call the interpreter with the file you want to open, e.g.: \verb!ghci ~/FP/prac1.hs!. As suggested by the examples, make sure that all your files end with the extension ".hs".
+\subsection{Linux (tested on: Ubuntu 11.04)}
+\begin{itemize}
+  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Open, in your favorite text editor, \texttt{\$HOME/.cabal/config}
+  \item Uncomment the \texttt{documention} line, and set it to \texttt{True}. Save the file.
+  \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{libxrandr-dev} on Ubuntu 11.04), it is required by the Haskell package \texttt{gloss-glfw}.
+  \item From the command line, go to the directory where you unpacked the \texttt{gloss-glfw} package, and run: \texttt{cabal install}.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run: \texttt{cabal install}.
+  \item Open (or create if it does not exist) in your favorite text editor \texttt{\$HOME/.ghci}.
+  \item Add the following two lines to this file, and save it:
+  \begin{description}
+    \item[] \texttt{:set -XNoMonomorphismRestriction}
+    \item[] \texttt{:set -XNoImplicitPrelude}
+  \end{description}
+\end{itemize}
 
-You always start a new module with the line "\verb!module ModuleName where!". A module may use definitions from other modules by including a line "\verb!import ModuleName"!. Always make sure that you at least import the \verb!fpprac! prelude in any file that you create by adding the line "\verb!import FPPrac!". Imports must be placed before any other definitions.
+\subsection{Notes on the Installation}
+As instructed, you have to make sure that generating API documentation is enabled when using \texttt{cabal} to install Haskell packages.
+The reasons you had to update the \emph{GHCi} configuration file are the following:
+\begin{description}
+  \item[] \texttt{:set -XNoMonomorphismRestriction} -- lifts certain restriction on the ability to derive polymorphic types for certain functions. 
+  If this extension is not set, certain types might be unexpectedly monomorphic.
+  \item[] \texttt{:set -XNoImplicitPrelude} -- GHC implicitly imports the \emph{Prelude} module, but the \emph{FPPrac} module defines certain functions that have the same name (such as \emph{take} and \emph{drop}), but a different type (\texttt{Number -> [a] -> [a]} instead of \texttt{Int -> [a] -> [a]}). 
+  So if you don't disable implicitly loading \emph{Prelude}, the compiler will complain that it can find two definitions for a certain function name. 
+  Note that \emph{FPPrac} exports all the functions from \emph{Prelude}, except those that share names; see the API documentation for which functions.
+\end{description}
+And for OS X specifically:
+\begin{description}
+  \item[] \texttt{:set -fno-ghci-sandbox} -- Makes sure that the graphics window runs in the same thread as GHCi. 
+  If not set, GHCi will crash if you try to use the graphics part of the Haskell environment.
+  Incidentally, it will also disable support for the debugger in GHCi (for which the teaching assistants offer no support to begin with).
+  \item[] \texttt{:set -framework Carbon} -- Gives the graphics part access to the OS X windowing system.
+  If not set, GHCi will crash if you try to use the graphics part of the Haskell environment.
+\end{description}
 
-The symbols \verb!--! comments the rest of a line; multi-line comments are enclosed by \verb!{-! and \verb!-}!. Haskell does not have prefix operators, so the ask the length of a list you have to use the \verb!length! function. Functions are made infix using backquotes: \verb!12 `div` 3!.
+\section{Using the Haskell Interpreter}
+We will mostly use the interpreter offered by the Glasgow Haskell Compiler. You can start the interpreter by running \texttt{ghci} from the command line. 
+You can immediately evaluate expressions in the interpreter. You can load files using the \texttt{:l} command, e.g.: \texttt{:l ~/FP/prac1.hs}.
+If you changed a file that is loaded in the interpreter, you can reload it by typing \texttt{:r}.
+Instead of opening the interpreter and then loading the file, you can also immediately call the interpreter with the file you want to open, e.g.: \texttt{ghci ~/FP/prac1.hs}.
+As suggested by the examples, make sure that all your files end with the extension ".hs".
 
-As Haskell is a well-known functional programming language many editors should have support (such as syntax-highlighting) for it. Editors that definitely have support for Haskell are: \emph{Vim, Emacs, TextMate, Sublime Text}. 
+You always start a new module with the line "\texttt{module ModuleName where}".
+A module may use definitions from other modules by including a line "\texttt{import ModuleName"}.
+Always make sure that you at least import the \texttt{fpprac} prelude in any file that you create by adding the line "\texttt{import FPPrac}", otherwise you won't have access to all the standard function and type definitions. 
+Imports must be placed before any other definitions.
+
+As Haskell is a well-known functional programming language many editors should have support (such as syntax-highlighting) for it.
+Editors that definitely have support for Haskell are: \emph{Vim, Emacs, TextMate,} and \emph{Sublime Text}. 
+
+Although the interpreter sports a debugger, the teaching assistants offer no support in its use.
+You can use the \texttt{trace} function, as described in the `dictaat', for debugging purposes.
 
 \section{Advanced Users}
-If you understand what \emph{Type Classes} are, and you want to use the default Haskell numeric datatypes, instead of the \verb!Number! type provided by the \verb!fpprac! package, remove the line "\verb!:set -XNoImplicitPrelude!" from your \verb!ghci! configuration file. You should also no longer import the \emph{FPPrac} module in your files. 
+If you understand what \emph{Type Classes} are, and you want to use the default Haskell numeric datatypes, instead of the \texttt{Number} type provided by the \texttt{fpprac} package, remove the line "\texttt{:set -XNoImplicitPrelude}" from your \texttt{ghci} configuration file.
+You should also no longer import the \emph{FPPrac} module in your files. 
 
 \section{More Information}
-When installing the Haskell platform, API documentation for all the libraries that came with it, should be included. And, if you followed, the installation instructions, API documentation for the \verb!fpprac! should be automatically added. The location is of this file is found in your \verb!cabal! configuration file (\emph{doc-index-file}). Lots of information about Haskell can of course be found on: \url{http://haskell.org}.
+There is a `dictaat' for Haskell on Blackboard that can be used as reference documentation.
+You will also find information on the graphical environment in the `dictaat'.
+
+When installing the Haskell platform, API documentation for all the libraries that came with it, should be included.
+And, if you followed, the installation instructions, API documentation for the \texttt{fpprac} package should have been automatically generated and added to the API index.
+The location is of this index file is stated in your \texttt{cabal} configuration file (\emph{doc-index-file}). 
+
+\emph{A lot} of additional information about Haskell can of course be found on \url{http://haskell.org}, but be warned that thing can become very advanced, and very technical, quite quickly.
 
 \end{document}
