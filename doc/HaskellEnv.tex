@@ -4,7 +4,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
-
+\hypersetup{bookmarksnumbered=true, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
 % Setup for fullpage use
 \usepackage{fullpage}
 
@@ -14,7 +14,7 @@
 \usepackage{url}
 \usepackage[pdftex]{graphicx}
 
-\title{Manual for the Haskell Environment}
+\title{Manual for the Haskell Environment \\ used in \\ Functioneel Programmeren (192112051)}
 \author{Christiaan Baaij}
 
 \date{Kwartiel 1, 2011}
@@ -48,7 +48,7 @@ The installation consists of a part equal for all platforms, and a part specific
 \subsection{For all platforms}
 \begin{itemize}
   \item Download the \emph{Haskell Platform}, version 2011.2.0.1, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if no 32-bit version is available for your platform! 
-  \item Follow the installation instructions of the Haskell Platform; Linux users: read the footnote\footnote{If version 2011.2.0.1 of the Haskell Platform is not included in your package manager (as is the case with Ubuntu 11.04), follow the instructions found on the Haskell Platform page to install GHC 7.0.3 manually, followed by a manual install (from source) of the Haskell Platform tools and libraries.
+  \item Follow the installation instructions of the Haskell Platform; Linux users: read the footnote\footnote{If version 2011.2.0.1 of the Haskell Platform is not included in your package manager (as is the case with Ubuntu 11.04), follow the instructions found on the Haskell Platform page to install GHC 7.0.3 manually (binary distribution), followed by a manual install (from source) of the Haskell Platform tools and libraries.
 To install GHC 7.0.3 and Haskell Platform 2011.2.0.1 on Ubuntu 11.04 you need the following libraries: \texttt{libgmp3-dev}, \texttt{libz-dev}, \texttt{libgl1-mesa-dev}, \texttt{libglu-dev}, and \texttt{freeglut3-dev}.}.
   \item Download, but do NOT install, the \texttt{gloss-glfw} and \texttt{fpprac} package from \url{http://github.com/christiaanb/gloss-glfw/} and \url{http://github.com/christiaanb/fpprac/} respectively.
   \item Unpack the two packages in separate directories.
@@ -56,7 +56,7 @@ To install GHC 7.0.3 and Haskell Platform 2011.2.0.1 on Ubuntu 11.04 you need th
 
 \subsection{Windows XP/Vista/7 (tested on: XP SP3, Win7 SP1 64-bit)}
 \begin{itemize}
-  \item Download the \texttt{glut32.dll} (\url{http://www.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows).
+  \item Download the \texttt{glut32.dll} (\url{http://www.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows systems).
   \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
   \item Open, in your favorite text editor, \texttt{\%appdata\%\textbackslash{}cabal\textbackslash{}config} (where \texttt{\%appdata\%} depends on your system but is usually something like \texttt{C:\textbackslash{}Documents and Settings\textbackslash{}<user>\textbackslash{}Application Data\textbackslash{}}).
   \item Uncomment the \texttt{documention} line, and set it to \texttt{True}. Save the file.
@@ -75,7 +75,7 @@ To install GHC 7.0.3 and Haskell Platform 2011.2.0.1 on Ubuntu 11.04 you need th
   \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
   \item Open, in your favorite text editor, \texttt{\$HOME/.cabal/config} and make sure the \texttt{documentation} line is uncommented and set to \texttt{True}. If this is not the case, change the file accordingly, and save.
   \item Go to the directory where you unpacked the \texttt{gloss-glfw} package, and run: \texttt{cabal install -f GLFW}.
-  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run: \texttt{cabal install}.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run: \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favorite text editor \texttt{\$HOME/.ghci}.
   \item Add the following four lines to this file, and save it:
   \begin{description}
@@ -91,9 +91,9 @@ To install GHC 7.0.3 and Haskell Platform 2011.2.0.1 on Ubuntu 11.04 you need th
   \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
   \item Open, in your favorite text editor, \texttt{\$HOME/.cabal/config}
   \item Uncomment the \texttt{documention} line, and set it to \texttt{True}. Save the file.
-  \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{libxrandr-dev} on Ubuntu 11.04), it is required by the Haskell package \texttt{gloss-glfw}.
+  \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{apt-get install libxrandr-dev} on Ubuntu 11.04), it is required by the Haskell package \texttt{gloss-glfw}.
   \item From the command line, go to the directory where you unpacked the \texttt{gloss-glfw} package, and run: \texttt{cabal install}.
-  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run: \texttt{cabal install}.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run: \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favorite text editor \texttt{\$HOME/.ghci}.
   \item Add the following two lines to this file, and save it:
   \begin{description}

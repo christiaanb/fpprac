@@ -1,7 +1,7 @@
 default: all
 
 all:
-	latexmk -pdf -pvc Haskell.tex
+	latexmk -pdf -pvc HaskellEnv.tex
 
 clean:
 	latexmk -CA
