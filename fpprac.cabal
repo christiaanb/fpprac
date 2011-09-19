@@ -57,7 +57,7 @@ Library
                        gloss-glfw == 1.3.*
   
   -- Modules not exported by this package.
-  Other-modules:       FPPrac.Prelude.Number
+  Other-modules:       FPPrac.Prelude.Number, FPPrac.GUI.Panel, FPPrac.GUI.Prompt
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         

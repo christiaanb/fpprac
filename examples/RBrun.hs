@@ -20,15 +20,15 @@ initstate = StateTp { mode = False
                     , rbts = [ exampleTree, exampleTree, exampleTree ]
                     }
 
-main = installEventHandler "RBrun" doE initstate
+main = installEventHandler "RBrun" doE initstate (drawTrees m 200 ts) 25
    where
       StateTp { mode = m, rbts = ts} = initstate
 
 ---- ============= event handler ================================================
 
-doE :: StateTp -> Input -> (StateTp, Maybe Picture)
-doE s (KeyIn 'm') = (s {mode  = not (mode s)}, Just (drawTrees (not (mode s)) 200 (rbts s)))
-doE s e           = (s, Just (drawTrees (not (mode s)) 200 (rbts s)))
+doE :: StateTp -> Input -> (StateTp, [Output])
+doE s (KeyIn 'm') = (s {mode  = not (mode s)}, [ScreenClear , DrawPicture (drawTrees (not (mode s)) 200 (rbts s))])
+doE s e           = (s, [])
 
 -- ======voorbeeldboom=========================================================
 -- Let op: deze boom is slechts ter illustratie van de grafische weergave,
