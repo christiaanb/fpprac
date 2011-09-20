@@ -2,6 +2,7 @@
 module FPPrac.GUI.Panel 
   ( PanelItemType(..)
   , PanelContent
+  , PanelItem
   , drawPanel
   , onItem
   , toggleItem
@@ -9,6 +10,7 @@ module FPPrac.GUI.Panel
   )
 where
 
+import Data.List (sort)
 import Graphics.Gloss
 import Graphics.Gloss.Data.Point
 
@@ -21,8 +23,15 @@ lblVshift      = -6
 data PanelItemType      = CheckButton | Button
   deriving (Eq,Show)
 
+-- | (Id, Title, Type, x-coord, y-coord, width, height)
 type PanelItem     = (Int,String,PanelItemType,Float,Float,Float,Float)
 
+-- | (Title, width, height, menuItems, commandItems)
+--
+-- Note: 
+-- - panels are drawn in the center of the screen
+--
+-- - menu items are currently not supported
 type PanelContent  = (String 
                      ,Float, Float
                      ,[(String,[(String,Int)])]
@@ -32,7 +41,7 @@ type PanelContent  = (String
 createDefState ::
   PanelContent
   -> [(Int,String)]
-createDefState (_, _, _, _, items) = map createDefStateItem items
+createDefState (_, _, _, _, items) = sort $ map createDefStateItem items
 
 createDefStateItem ::
   PanelItem

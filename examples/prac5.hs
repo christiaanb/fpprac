@@ -8,6 +8,7 @@ import Graphics
 import System.FilePath (splitPath, dropExtension)
 
 import CreateGraph
+import Debug.Trace
 
 data MyStore = MyStore
   { myGraph :: Graph

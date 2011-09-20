@@ -10,6 +10,9 @@ module FPPrac.Events
   , Input (..)
   , Output (..)
   , PanelItemType (..)
+  , PromptInfo (..)
+  , PanelContent
+  , PanelItem
   , installEventHandler
   )
 where
@@ -20,15 +23,23 @@ import FPPrac.Graphics
 import FPPrac.GUI.Panel
 import FPPrac.GUI.Prompt
 import Graphics.Gloss.Interface.Game
+import Data.Time (getCurrentTime,utctDayTime)
 
 type PromptInfo = (String,String)
 
-data FileType = TXTFile String | BMPFile Picture
+-- | Possible filetypes
+data FileType 
+  -- | Text file
+  = TXTFile String 
+  -- | Bitmap file
+  | BMPFile Picture
   deriving (Eq,Show)
 
 -- | Possible input events
 data Input -- | No input
-					 = NoInput Float
+           --
+           -- Generated every refresh of the eventhandler
+					 = NoInput
 					 -- | Keyboard key x is pressed down; ' ' for space, \\t for tab, \\n for enter
            | KeyIn 			 Char
 					 -- | Left mouse button is pressed at location (x,y)
@@ -37,22 +48,109 @@ data Input -- | No input
 					 | MouseUp     (Float,Float)
 					 -- | Mouse pointer is moved to location (x,y)
 					 | MouseMotion (Float,Float)
+					 -- | Mouse is double-clicked at location (x,y)
 					 | MouseDoubleClick (Float,Float)
+					 -- | Prompt (windowname,textbox content)
+					 --
+					 -- Content returned from textbox in promptwindow with 'windowname'
 					 | Prompt PromptInfo
+					 -- | Panel buttonId [(controlId, value)]
+					 --
+					 -- Event indicating that in the panel, the button with buttonId is
+					 -- pressed and that at the time the controls had the given value
+					 --
+					 -- Note: the list is ordered by controlId
+					 --
+					 -- - For checkboxes a value \"Y\" indicates that they are checked and
+					 -- a value of \"N\" indicates they are unchecked
+					 --
+					 -- - Buttons have no controlstate
 					 | Panel Int [(Int,String)]
+					 -- | File name content
+					 --
+					 -- The found file with given name, and found content
 					 | File FilePath FileType
-					 | Save Bool
+					 -- | Indicates if saving of file at filepath succeeded
+					 | Save FilePath Bool
+					 -- | Response to GetTime
+					 --
+					 -- The time from midnight, 0 <= t < 86401s (because of leap-seconds)
+					 -- It has a precision of 10^-12 s. Leap second is only added if day
+					 -- has leap seconds
+					 | Time Float
+					 -- | Invalid / Unknown input
 					 | Invalid
 	deriving (Eq,Show)
 
-data Output = DrawOnBuffer Bool
+data Output -- | Command to change the drawing mode
+            --
+            -- Pictures returned from the eventhandler will normally be drawn
+            -- on the screen and in a buffer, so that the window can be quickly
+            -- redrawn.
+            --
+            -- A DrawOnBuffer command can change this default behavior, If the
+            -- parameter is False, pictures are only drawn on the screen. If the
+            -- parameter is True, drawing will be down on both the buffer and the
+            -- screen. This can be useful in response to MouseMotion Events.
+            --
+            -- Example of rubber banding in line drawing program:
+            --
+            -- @
+            -- handler (p1:ps) (MouseDown p2)
+            --   = (p1:ps, [DrawOnBuffer False, DrawPicture (Color black $ Line [p1,p2])])
+            -- handler (p1:ps) (MouseMotion p2)
+            --   = (p1:ps, [DrawOnBuffer False, DrawPicture (Color black $ Line [p1,p2])])
+            -- handler (p1:ps) (MouseUp p2)
+            --   = (p2:p1:ps, [DrawOnBuffer True, DrawPicture (Color black $ Line [p1,p2])])
+            -- @ 
+            = DrawOnBuffer Bool
+            -- | Draw the picture
             | DrawPicture  Picture
+            -- | GraphPrompt (windowName,info)
+            --
+            -- Create a graphical prompt window which asks the user to enter
+            -- a string in a textbox. The user can be informed about valid
+            -- entries through the 'info' field.
+            --
+            -- Note: the entered string is recorded as the following input event:
+            -- 'Prompt (windowName,enteredText)'
             | GraphPrompt  PromptInfo
+            -- | Command to create a panel with the given panel content, must be
+            -- actived with the 'PanelUpdate' command
             | PanelCreate  PanelContent
+            -- | PanelUpdate visible [(identifier, value)]
+            --
+            -- Command to change visibility and the content of a panel.
+            -- 
+            -- Note: not all controls need to be listed, the order can be
+            -- arbitrary
+            --
+            -- - For checkboxes, a value \"Y\" checks them, a value \"N\" unchecks them
+            --
+            -- - Buttons can not be altered
             | PanelUpdate  Bool [(Int,String)]
+            -- | Clear the screen and buffer
             | ScreenClear
+            -- | ReadFile fileName default
+            --
+            -- Read the file of the given filetype at the filename, if it fails
+            -- The default content is returned
+            --
+            -- Note: the read file command generates following input event:
+            -- 'File fileName content'           
             | ReadFile FilePath FileType
+            -- | SaveFile fileName content
+            --
+            -- Save the file of the given filetype at the filename location
+            --
+            -- Note: the save file command generates following input event:
+            -- Save fileName success (True/False)
             | SaveFile FilePath FileType
+            -- | Request the current time of day in seconds
+            -- 
+            -- Note: the gettime command generates the following input event:
+            -- 'Time timeOfDay'
+            | GetTime
   deriving (Eq,Show)
 
 data GUIMode = PanelMode | PromptMode PromptInfo String | FreeMode | PerformIO
@@ -100,7 +198,7 @@ installEventHandler name handler initState p dcTime = gameInWindowIO
   (EventState p p True [] [] 0 FreeMode Nothing initState)
   screen
   (\e s -> handleInput handler dcTime s (eventToInput e))
-  (\t s -> handleInputIO handler dcTime s (NoInput t))
+  (\t s -> handleInputIO handler dcTime s NoInput)
 
 handleInputIO ::
   forall userState
@@ -169,8 +267,8 @@ handleInput handler dcTime s i = s
     
 registerDoubleClick d 0 (MouseDown _)     = (d  ,[])
 registerDoubleClick _ n (MouseDown (x,y)) = (0  ,[MouseDoubleClick (x,y)])
-registerDoubleClick _ 0 (NoInput _)       = (0  ,[])
-registerDoubleClick _ n (NoInput _)       = (n-1,[])
+registerDoubleClick _ 0 NoInput           = (0  ,[])
+registerDoubleClick _ n NoInput           = (n-1,[])
 registerDoubleClick _ n _                 = (n  ,[])
 
 handleOutput s (DrawOnBuffer b) = s {drawOnBuffer = b}
@@ -186,6 +284,9 @@ handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(ReadFile _ _) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
   
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(SaveFile fp ft) =
+  s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
+
+handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(GetTime) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
 
 handleOutput s@(EventState {..}) (PanelCreate panelContent) 
@@ -216,11 +317,23 @@ handleIO (ReadFile filePath (TXTFile defContents)) =
       return $ File filePath $ TXTFile f
   ) `catch`
   (\_ -> return (File filePath $ TXTFile defContents))
+
+handleIO (ReadFile filePath (BMPFile defContents)) =
+  (do f <- loadBMP filePath
+      return $ File filePath $ BMPFile f
+  ) `catch`
+  (\_ -> return (File filePath $ BMPFile defContents))
   
 handleIO (SaveFile filePath (TXTFile content)) = 
   ( do writeFile filePath content
-       return $ Save True
+       return $ Save filePath True
   ) `catch`
-  (\_ -> return $ Save False)
+  (\_ -> return $ Save filePath False)
+
+handleIO (SaveFile filePath (BMPFile _)) = return $ Save filePath False
+
+handleIO GetTime = do
+  t <- fmap utctDayTime $ getCurrentTime
+  return $ Time (fromRational $ toRational t) 
 
 handleIO _  = return Invalid
