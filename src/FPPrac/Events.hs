@@ -6,6 +6,7 @@
 -- during the execution of a program!
 module FPPrac.Events
   ( module Graphics.Gloss.Interface.Game
+  , FileType (..)
   , Input (..)
   , Output (..)
   , PanelItemType (..)
@@ -22,9 +23,12 @@ import Graphics.Gloss.Interface.Game
 
 type PromptInfo = (String,String)
 
+data FileType = TXTFile String | BMPFile Picture
+  deriving (Eq,Show)
+
 -- | Possible input events
 data Input -- | No input
-					 = NoInput
+					 = NoInput Float
 					 -- | Keyboard key x is pressed down; ' ' for space, \\t for tab, \\n for enter
            | KeyIn 			 Char
 					 -- | Left mouse button is pressed at location (x,y)
@@ -36,6 +40,9 @@ data Input -- | No input
 					 | MouseDoubleClick (Float,Float)
 					 | Prompt PromptInfo
 					 | Panel Int [(Int,String)]
+					 | File FilePath FileType
+					 | Save Bool
+					 | Invalid
 	deriving (Eq,Show)
 
 data Output = DrawOnBuffer Bool
@@ -44,15 +51,18 @@ data Output = DrawOnBuffer Bool
             | PanelCreate  PanelContent
             | PanelUpdate  Bool [(Int,String)]
             | ScreenClear
+            | ReadFile FilePath FileType
+            | SaveFile FilePath FileType
   deriving (Eq,Show)
 
-data GUIMode = PanelMode | PromptMode PromptInfo String | FreeMode
+data GUIMode = PanelMode | PromptMode PromptInfo String | FreeMode | PerformIO
   deriving (Eq,Show)
 
 data EventState a = EventState { screen       :: Picture
                                , buffer       :: Picture
                                , drawOnBuffer :: Bool
                                , storedInputs :: [Input]
+                               , storedOutputs :: [Output]
                                , doubleClickT :: Int
                                , guiMode      :: GUIMode
                                , panel        :: Maybe (PanelContent,[(Int,String)])
@@ -67,7 +77,7 @@ eventToInput (EventKey (SpecialKey  KeyBackspace) Down _ p) = KeyIn '\b'
 eventToInput (EventKey (MouseButton LeftButton) Down _ p) = MouseDown p
 eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
 eventToInput (EventMotion p)															= MouseMotion p
-eventToInput e                                            = NoInput
+eventToInput e                                            = Invalid
 
 -- | The event mode lets you manage your own input. 
 -- Pressing ESC will still abort the program, but you don't get automatic 
@@ -81,16 +91,30 @@ installEventHandler ::
   -> Picture -- ^ Initial Picture
   -> Int -- ^ doubleclick speed
   -> IO ()
-installEventHandler name handler initState p dcTime = gameInWindow
+installEventHandler name handler initState p dcTime = gameInWindowIO
   name
   (800,600)
   (20,20)
   white
   50
-  (EventState p p True [] 0 FreeMode Nothing initState)
+  (EventState p p True [] [] 0 FreeMode Nothing initState)
   screen
   (\e s -> handleInput handler dcTime s (eventToInput e))
-  (\t s -> handleInput handler dcTime s NoInput)
+  (\t s -> handleInputIO handler dcTime s (NoInput t))
+
+handleInputIO ::
+  forall userState
+  . (userState -> Input -> (userState, [Output]))
+  -> Int
+  -> EventState userState
+  -> Input
+  -> IO (EventState userState)
+handleInputIO handler dcTime s@(EventState {guiMode = PerformIO,..}) i = do
+  inps <- fmap (filter (/= Invalid)) $ mapM handleIO storedOutputs
+  let s' = s {guiMode = FreeMode, storedOutputs = [], storedInputs = storedInputs ++ inps}
+  return $ handleInput handler dcTime s' i
+
+handleInputIO handler dcTime s i = return $ handleInput handler dcTime s i
 
 handleInput ::
   forall userState
@@ -100,10 +124,10 @@ handleInput ::
   -> Input
   -> EventState userState
 handleInput handler dcTime s@(EventState {guiMode = FreeMode, ..}) i 
-  = s' {userState = userState', doubleClickT = doubleClickT'}
+  = s' {userState = userState', doubleClickT = doubleClickT', storedInputs = []}
   where
     (doubleClickT',dc)    = registerDoubleClick dcTime doubleClickT i
-    remainingInputs       = storedInputs ++ (i:dc)
+    remainingInputs       = storedInputs ++ (if null dc then [i] else dc)
     (userState',outps)    = mapAccumL handler userState remainingInputs
     s'                    = foldl handleOutput s $ concat outps 
 
@@ -143,11 +167,11 @@ handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, .
 
 handleInput handler dcTime s i = s
     
-registerDoubleClick d 0 (MouseDown _)     = (d,[])
-registerDoubleClick _ n (MouseDown (x,y)) = (0, [MouseDoubleClick (x,y)])
-registerDoubleClick _ 0 NoInput           = (0,[])
-registerDoubleClick _ n NoInput           = (n-1,[])
-registerDoubleClick _ n _                 = (n,[])
+registerDoubleClick d 0 (MouseDown _)     = (d  ,[])
+registerDoubleClick _ n (MouseDown (x,y)) = (0  ,[MouseDoubleClick (x,y)])
+registerDoubleClick _ 0 (NoInput _)       = (0  ,[])
+registerDoubleClick _ n (NoInput _)       = (n-1,[])
+registerDoubleClick _ n _                 = (n  ,[])
 
 handleOutput s (DrawOnBuffer b) = s {drawOnBuffer = b}
 handleOutput s ScreenClear      = s {buffer = Blank, screen = Blank}
@@ -157,6 +181,13 @@ handleOutput s@(EventState {..}) (DrawPicture p) =
         else buffer
     , screen = Pictures [buffer, p]
     }
+
+handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(ReadFile _ _) =
+  s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
+  
+handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(SaveFile fp ft) =
+  s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
+
 handleOutput s@(EventState {..}) (PanelCreate panelContent) 
   = s {panel = Just (panelContent,defItemState)}
   where
@@ -178,3 +209,18 @@ handleOutput s@(EventState {panel = Nothing, ..}) (PanelUpdate False _)
 
 handleOutput s@(EventState {..}) (GraphPrompt promptInfo) 
   = s {guiMode = PromptMode promptInfo "", screen = Pictures [buffer,drawPrompt promptInfo ""]}
+
+handleIO :: Output -> IO Input
+handleIO (ReadFile filePath (TXTFile defContents)) =
+  (do f <- readFile filePath
+      return $ File filePath $ TXTFile f
+  ) `catch`
+  (\_ -> return (File filePath $ TXTFile defContents))
+  
+handleIO (SaveFile filePath (TXTFile content)) = 
+  ( do writeFile filePath content
+       return $ Save True
+  ) `catch`
+  (\_ -> return $ Save False)
+
+handleIO _  = return Invalid

@@ -54,7 +54,7 @@ Library
   
   -- Packages needed in order to build this package.
   Build-depends:       base == 4.*,
-                       gloss-glfw == 1.3.*
+                       gloss-glfw > 1.3.4.1
   
   -- Modules not exported by this package.
   Other-modules:       FPPrac.Prelude.Number, FPPrac.GUI.Panel, FPPrac.GUI.Prompt

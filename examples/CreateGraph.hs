@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE Rank2Types #-}
 module CreateGraph where
 
 import Prelude
@@ -8,20 +10,39 @@ import Graphics
 import Data.Char
 import Data.List(sort,(\\))
 
+import Debug.Trace
+
 data Process = MakingNode | MakingEdge | DoingNothing
   deriving (Eq,Show)
 
-data Store = Store
-  { graph     :: Graph
-  , startNode :: Node
-  , endNode   :: Node
-  , process   :: Process
+data Store a = Store
+  { graph              :: Graph
+  , startNode          :: Node
+  , endNode            :: Node
+  , process            :: Process
+  , userHandler        :: a -> Input -> (a,[Output])
+  , userHandlerEnabled :: Bool
+  , userState          :: a
+  , userStateInit      :: Graph -> a
+  , userGraphLens      :: a -> Graph
+  , userBottomLine     :: Graph -> Picture
   }
 
 startGraph   = Graph {name="",directed=False,weighted=False,nodes=[],edges=[]}
 nullNode     = ('-',white,(0,0))
-clearStore s = s {startNode=nullNode, endNode=nullNode, process=DoingNothing}
-startStore   = Store {graph=startGraph, startNode=nullNode, endNode=nullNode, process=DoingNothing}
+clearStore s = s {startNode=nullNode, endNode=nullNode, process=DoingNothing, userHandlerEnabled = False}
+startStore h i l b = Store 
+               { graph = startGraph
+               , startNode = nullNode
+               , endNode = nullNode
+               , process = DoingNothing
+               , userHandler = h
+               , userHandlerEnabled = False
+               , userState = i startGraph
+               , userStateInit = i
+               , userGraphLens = l
+               , userBottomLine = b
+               }
 
 distance (x0,y0) (x1,y1) = sqrt ((x1-x0)^2 + (y1-y0)^2)
 
@@ -52,7 +73,24 @@ text2edge line = (lbl1,lbl2, col, read (tail awght))
                  (acol,awght) = span (/=':') (drop 2 line)
                  col          = (\(r,g,b,a) -> makeColor r g b a) $ read acol
                  
-createGraph :: Store -> Input -> (Store,[Output])
+createGraph :: 
+  forall a 
+  . Store a 
+  -> Input 
+  -> (Store a,[Output])
+  
+createGraph store@(Store {userHandlerEnabled=True,..}) (KeyIn 'q') 
+  = (s', [DrawPicture $ drawBottomLine graph'])
+  where
+    graph'     = userGraphLens userState
+    userState' = userStateInit graph'
+    s'         = clearStore $ store {graph=graph',userState=userState'}
+
+createGraph store@(Store {userHandlerEnabled=True, ..}) i
+  = (store {userState = userState'}, o) 
+  where
+    (userState',o) = userHandler userState i
+
 createGraph store (MouseDown (x,y))
   | nodeClicked /= Nothing = (newStoreE, [DrawOnBuffer False])
   | otherwise              = (newStoreN, [])
@@ -98,8 +136,8 @@ createGraph store (MouseUp (x,y))
   = (storeCl, [DrawOnBuffer True, DrawPicture $ Pictures [drawGraph graph, drawBottomLine graph]])
     
   where
-    Store {graph=graph,startNode=(lblS,colS,crdsS),process=process} = store
-    Graph {directed=directed,weighted=weighted,nodes=nodes,edges=edges} = graph
+    Store {startNode=(lblS,colS,crdsS),..} = store
+    Graph {..} = graph
     
     -- New node
     freeLabels = alphabet \\ [lbl | (lbl,_,_) <- nodes]
@@ -183,6 +221,71 @@ createGraph store (Panel 1 [(60,dir), (70,wghtd)])
                }
     newStore = store {graph=newGraph}
 
+createGraph store (KeyIn 'r')
+  = (store,[GraphPrompt ("Read graph", "filename")])
+
+createGraph store (Prompt ("Read graph", fileName))
+  | fileName /= "" = (store, [ReadFile fileName (TXTFile "")])
+  | otherwise      = (store, [])
+  
+createGraph store (File fileName (TXTFile input))
+  | input /= "" 
+  = (newStore, [DrawPicture $ Pictures [drawGraph newGraph, drawBottomLine newGraph]])
+  | otherwise   
+  = (store,[])
+  where
+    (ns,bs) = (span (/="--") . drop 2 . lines) input
+    directed = (head . lines) input == "directed:yes"
+    weighted = (head . tail . lines) input == "weighted:yes"
+    
+    newGraph = Graph 
+               { name     = fileName
+               , directed = directed
+               , weighted = weighted
+               , nodes    = map text2node ns
+               , edges    = map text2edge (tail bs)
+               }
+    
+    newStore = clearStore $ store {graph=newGraph}
+
+createGraph store (KeyIn 's')
+  | nm /= ""  = (store, [SaveFile nm (TXTFile savetext)])
+  | otherwise = (store, [GraphPrompt ("save as", "filename")])
+  where
+    Graph {name=nm,directed=directed,weighted=weighted,nodes=nodes,edges=edges} = graph store
+    
+    dirweight | directed && weighted = "directed:yes\nweighted:yes\n"
+              | directed             = "directed:yes\nweighted:no\n"
+              | weighted             = "directed:no\nweighted:yes\n"
+              | otherwise            = "directed:no\nweighted:no\n"
+
+    savetext = dirweight
+               ++ concat (map node2text nodes) ++ "--\n"
+               ++ concat (map edge2text edges)
+
+createGraph store (KeyIn 'a')
+  = (store,[GraphPrompt ("save as", "filename")])
+
+createGraph store (Prompt ("save as", nm))
+  = (newStore, [SaveFile nm (TXTFile savetext), DrawPicture $ drawBottomLine newGraph])
+  where
+    Graph {name=nm0,directed=directed,weighted=weighted,nodes=nodes,edges=edges} = graph store
+    
+    dirweight | directed && weighted = "directed:yes\nweighted:yes\n"
+              | directed             = "directed:yes\nweighted:no\n"
+              | weighted             = "directed:no\nweighted:yes\n"
+              | otherwise            = "directed:no\nweighted:no\n"
+
+    savetext = dirweight
+               ++ concat (map node2text nodes) ++ "--\n"
+               ++ concat (map edge2text edges)
+    
+    newGraph = (graph store) {name=nm}
+    newStore = store {graph=newGraph}
+
+createGraph store@(Store {..}) (KeyIn '5') 
+  = (store {userHandlerEnabled = True, userState = userStateInit graph}, [DrawPicture $ userBottomLine graph])
+
 createGraph store _ = (store,[])
 
 newPanel
@@ -203,7 +306,7 @@ onNode [] p = Nothing
 onNode (n@(_,_,q):ns) p | distance p q <= nodeRadius = Just n
                         | otherwise                  = onNode ns p
 
-main = installEventHandler "createGraph" createGraph startStore startPic 25
+doGraph h i l b = installEventHandler "createGraph" createGraph (startStore h i l b) startPic 10
   where
     startPic = Pictures
       [ drawGraph startGraph

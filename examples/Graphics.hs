@@ -2,6 +2,7 @@ module Graphics where
 
 import Prelude
 import FPPrac.Graphics
+import System.FilePath (splitPath, dropExtension)
 
 data Thickness = Thin | Thick
   deriving (Eq,Show)
@@ -17,7 +18,7 @@ data Graph = Graph
   , weighted :: Bool
   , nodes    :: [Node]
   , edges    :: [Edge]
-  }
+  } deriving (Eq,Show)
 
 data EdgeDrawingData = EdgeDrawingData
   { edgeStartpunt   :: Point -- | (tx,ty): startpunt van edge
@@ -62,8 +63,8 @@ allEdgeDrawingData thickness graph (lbl1,lbl2,col,wght)
       }
     where
       Graph {directed=directed,nodes=nodes} = graph
-      (x1,y1) = (\x -> case x of [] -> error "allEdgeDrawingData: lbl1"; (x:xs) -> x)  [ (x,y) | (lbl,_,(x,y)) <- nodes, lbl==lbl1 ]
-      (x2,y2) = (\x -> case x of [] -> error "allEdgeDrawingData: lbl2"; (x:xs) -> x) [ (x,y) | (lbl,_,(x,y)) <- nodes, lbl==lbl2 ]
+      (x1,y1) = head [ (x,y) | (lbl,_,(x,y)) <- nodes, lbl==lbl1 ]
+      (x2,y2) = head [ (x,y) | (lbl,_,(x,y)) <- nodes, lbl==lbl2 ]
 
       rico  = (y2-y1) / (x2-x1)
       alpha | x2 > x1              = atan rico
@@ -187,12 +188,12 @@ drawGraph graph
 drawBottomLine :: Graph -> Picture
 drawBottomLine graph
     = Pictures
-      [ Translate 0 (-300) $ Color white $ rectangleSolid 800 bottomLineHeight
+      [ Translate 0 (-300 + bottomLineHeight / 2) $ Color white $ rectangleSolid 800 bottomLineHeight
       , Color black $ Line [(-400,height1),(400,height1)]
       , Color black $ Line [(-240,height1),(-240,-300)]
       , Color black $ Line [(100,height1),(100,-300)]
       , Translate (-392) height2 $ Color black $ Scale 0.11 0.11 $ Text "create:"
-      , Translate (-332) height2 $ Color red   $ Scale 0.11 0.11 $ Text (name graph)
+      , Translate (-332) height2 $ Color red   $ Scale 0.11 0.11 $ Text $ (case (name graph) of "" -> "" ; xs -> dropExtension $ last $ splitPath xs)
       , Translate (-235) height2 $ Color black $ Scale 0.11 0.11 $ Text "click: node; drag: edge; double: remove node"
       , Translate 120    height2 $ Color black $ Scale 0.11 0.11 $ Text "[n]ew; [r]ead; [s]ave; save [a]s; prac[5]"
       ]

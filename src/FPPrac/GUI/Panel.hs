@@ -37,7 +37,7 @@ createDefState (_, _, _, _, items) = map createDefStateItem items
 createDefStateItem ::
   PanelItem
   -> (Int,String)
-createDefStateItem (i,_,CheckButton,_,_,_,_) = (i,"N")
+createDefStateItem (i,_,CheckButton,_,_,_,_)   = (i,"N")
 createDefStateItem (i,_,_            ,_,_,_,_) = (i,"" )
                      
 drawPanel ::
