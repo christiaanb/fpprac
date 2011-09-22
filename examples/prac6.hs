@@ -1,4 +1,4 @@
-module Prac5 where
+module Prac6 where
 
 import Prelude
 import FPPrac.Graphics
@@ -14,21 +14,21 @@ data MyStore = MyStore
   { myGraph :: Graph
   }
   
-initPrac5 graph = MyStore {myGraph = graph}
+initPrac6 graph = MyStore {myGraph = graph}
 
-main = doGraph doPrac5 initPrac5 myGraph drawMypracBottomLine
+main = doGraph doPrac6 initPrac6 myGraph drawMypracBottomLine
 
-doPrac5 :: MyStore -> Input -> (MyStore,[Output])
+doPrac6 :: MyStore -> Input -> (MyStore,[Output])
 -- =======================================
--- = Voeg hier extra doPrac5 clauses toe =
+-- = Voeg hier extra doPrac6 clauses toe =
 -- =======================================
--- doPrac5 myStore (KeyIn 'r') = (myStore', o)
+-- doPrac6 myStore (KeyIn 'r') = (myStore', o)
 --   where
 --     myStore' = ...
 --     o        = ...
 --
 
-doPrac5 myStore i = (myStore,[])
+doPrac6 myStore i = (myStore,[])
 
 drawMypracBottomLine :: Graph -> Picture
 drawMypracBottomLine graph = 
@@ -38,8 +38,8 @@ drawMypracBottomLine graph =
     , Color black $ Line [(-240,height1),(-240,-300)]
     , Translate (-392) height2 $ Color black $ Scale 0.11 0.11 $ Text "myprac:"
     , Translate (-332) height2 $ Color red   $ Scale 0.11 0.11 $ Text $ (case (name graph) of "" -> "" ; xs -> dropExtension $ last $ splitPath xs)
-    -- Voeg hier, indien nodig, extra informatie toe
-    -- , Translate (-235) height2 $ Color black $ Scale 0.11 0.11 $ Text "..."
+    -- Vervang onderstaande tekst, indien nodig, door extra informatie
+    , Translate (-235) height2 $ Color black $ Scale 0.11 0.11 $ Text "Press 'q' to return to node-drawing"
     ]
     where
       height1 = -300 + bottomLineHeight

@@ -195,7 +195,7 @@ drawBottomLine graph
       , Translate (-392) height2 $ Color black $ Scale 0.11 0.11 $ Text "create:"
       , Translate (-332) height2 $ Color red   $ Scale 0.11 0.11 $ Text $ (case (name graph) of "" -> "" ; xs -> dropExtension $ last $ splitPath xs)
       , Translate (-235) height2 $ Color black $ Scale 0.11 0.11 $ Text "click: node; drag: edge; double: remove node"
-      , Translate 120    height2 $ Color black $ Scale 0.11 0.11 $ Text "[n]ew; [r]ead; [s]ave; save [a]s; prac[5]"
+      , Translate 120    height2 $ Color black $ Scale 0.11 0.11 $ Text "[n]ew; [r]ead; [s]ave; save [a]s; prac[6]"
       ]
     where
       height1 = -300 + bottomLineHeight

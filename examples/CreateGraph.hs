@@ -283,7 +283,7 @@ createGraph store (Prompt ("save as", nm))
     newGraph = (graph store) {name=nm}
     newStore = store {graph=newGraph}
 
-createGraph store@(Store {..}) (KeyIn '5') 
+createGraph store@(Store {..}) (KeyIn '6') 
   = (store {userHandlerEnabled = True, userState = userStateInit graph}, [DrawPicture $ userBottomLine graph])
 
 createGraph store _ = (store,[])

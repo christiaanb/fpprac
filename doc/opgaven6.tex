@@ -1,0 +1,264 @@
+\documentclass[11pt]{article}
+
+   % \input{H:/TeX/PREAMBLE}
+   \textheight  215mm
+%  \textwidth  140mm
+%  \topmargin  -10mm
+%  \oddsidemargin  10mm
+%  \evensidemargin  10mm
+%  \pagestyle{empty}
+%  \includeonly{}
+
+\begin{document}
+
+\section*{Functioneel Programmeren -- opgaven practicum 6}
+Dit practicum gaat over grafen.
+
+% \paragraph{Opmerking vooraf.}
+% Ten opzichte van vorig jaar is de volgorde van de series practicumopdrachten veranderd.
+% Dit is de tweede ``serie 5'', omdat ook in de ondersteunende Amanda code bij dit practicum dat nummer terugkomt en het niet haalbaar is om binnen korte tijd die code om te zetten naar een neutrale naamgeving.
+% We hopen dat niemand daardoor de kluts kwijt raakt.
+
+\paragraph{Voorbereiding.}
+Download vanaf BlackBoard de bestanden:
+\begin{tabbing}
+  \hspace{1em}
+    \= \verb!Graphics.hs! \hspace{3em}
+    \= bevat grafische hulpfuncties;					\\
+
+    \> \verb!CreateGraph.hs!
+    \> bevat event-handler \verb!createGraph! om graaf te		\\
+    \> \> tekenen (maximaal 26 nodes).	\\
+    
+    \> \verb!prac6.hs!
+    \> bevat event-handler \verb!doPrac6!, door uzelf te maken. \\
+    \> \> Bevat \verb!main!.
+\end{tabbing}
+Deze bestanden importeren elkaar, in de volgorde:
+\begin{verbatim}
+  Prac6.hs  <==  CreateGraph.hs  <==  Graphics.hs
+\end{verbatim}
+Run altijd \verb!prac6.hs!, de andere twee bestanden bevatten niet alle
+be\-no\-digde definities en kunnen daardoor niet zelfstandig gerund worden.
+\\[2ex]
+In deze bestanden zijn diverse types en functies voorgedefinieerd die u bij
+dit practicum kunt gebruiken.
+Hieronder volgt een beschrijving.
+
+\noindent
+\paragraph{Types.}
+De volgende types zijn van belang:
+\begin{tabbing}
+  \hspace{1em}
+    \= \verb!type Point = (Float,Float)!				\\
+    \> \hspace{3em}
+       \= voor de $(x,y)$-co\"ordinaten van een punt.		
+          Co\"ordinaten van het					\\
+    \> \> grafische vlak lopen (zolang de grootte van het window niet wordt \\ 
+    \> \> aangepast) in de $x$-richting van $-400$ tot $+400$, en in de $y$-richting \\
+    \> \> van $-300$ tot $+300$						\\[1ex]
+    \> \verb!type Node = (Char,Color,Point)!			\\
+    \> \> een node is een drietal van een {\em label\/}, een {\em kleur\/}, en de {\em co\"ordinaten\/},				\\[1ex]
+    \> \verb!type Edge = (Char,Char,Color,Int)!			\\
+    \> \> een edge is een viertal bestaande uit {\em startlabel\/},
+       {\em eindlabel\/},					\\
+    \> \> {\em kleur\/}, en {\em gewicht\/},			\\[1ex]
+    \> \verb!data Graph = Graph! \\
+    \> \verb!  { name     :: String!			\\
+    \> \verb!  , directed :: Bool!			\\
+    \> \verb!  , weighted :: Bool!			\\
+    \> \verb!  , nodes    :: [Node]!		\\
+    \> \verb!  , edges    :: [Edge]!		\\
+    \> \verb!  } deriving (Eq,Show)!					\\
+    \> \> een graaf is een {\em record\/} met velden voor de
+          {\em naam\/} v.d.\ graaf				\\
+    \> \> (wordt gebruikt bij het saven); twee booleans die
+          aangeven						\\
+    \> \> of de graaf {\em gericht\/} en/of {\em gewogen\/} is,
+          en twee velden met					\\
+    \> \> {\em lijsten\/} van nodes, respectievelijk edges. \\	\\[1ex]
+    \> \verb!data MyStore = MyStore! \\
+    \> \verb!  { myGraph :: Graph ! \\
+    \> \verb!  } deriving (Eq,Show)!		\\
+    \> \> om in uw eigen eventhandler (\verb!doPrac6!) de toestand bij te \\
+    \> \>  houden. Dit type zult u zelf moeten aanvullen.
+	  Let er op dat					\\
+    \> \> u zo nodig ook de functie \verb!initPrac6! uitbreidt (zie hieronder).
+\end{tabbing}
+
+
+\paragraph{Commando's.}
+De functie \verb!createGraph! in het bestand \verb!CreateGraph.hs!
+handelt het tekenen van de graaf af (met muisklikken en slepen).
+De default is een ongerichte, ongewogen graaf, maar grafen kunnen ook
+gericht en/of gewogen zijn.
+
+Behalve muisklikken verwerkt de functie \verb!createGraph! \emph{zes}
+commando's:
+\begin{tabbing}
+  \hspace{1em}
+    \= \verb!n! \hspace{2em}
+    \= om een nieuwe graaf te starten,				\\
+    \> \verb!s!
+    \> om een graaf te saven,					\\
+    \> \verb!a!
+    \> om een graaf te saven onder een andere naam (save as),	\\
+    \> \verb!r!
+    \> om een bestaande graaf in te lezen,			\\
+    \> \verb!6!
+    \> om naar uw eigen functies in \verb!prac6.hs! te springen.
+       Hierbij							\\
+    \>
+    \> wordt de functie \verb!initPrac6! ge\"evalueerd (zie
+    	hieronder),						\\
+    \> \verb!q!
+    \> om te stoppen.
+\end{tabbing}
+
+\paragraph{Functies.}
+De volgende grafische functies zijn beschikbaar om grafen (of onderdelen
+daarvan) op het grafische scherm zichtbaar te maken:
+\begin{verbatim}
+  drawNode      :: Node -> Picture
+  drawEdge      :: Graph -> Edge -> Picture
+  drawThickEdge :: Graph -> Edge -> Picture
+  drawWeight    :: Graph -> Edge -> Picture
+  drawGraph     :: Graph -> Picture
+\end{verbatim}
+De functies \verb!drawEdge! en \verb!drawThickEdge! tekenen alleen een
+lijn of een pijl.
+In het geval van een gewogen graaf moet het gewicht van een edge met
+\verb!drawWeight! apart afgebeeld worden.
+Voor het overige spreken deze fucnties voor zichzelf.
+\\[2ex]
+Behalve deze grafische functies is ook de volgende functie gegeven:
+\begin{verbatim}
+  onNode :: [Node] -> Point -> Maybe Node
+\end{verbatim}
+Hiermee kunt u testen of met een muisklik \'e\'en van de
+bestaande nodes wordt geselecteerd.
+Het \emph{Maybe}-type is als volgt gedefinieerd:
+\begin{verbatim}
+data Maybe a = Nothing
+             | Just a
+\end{verbatim}
+De functie-aanroep
+\begin{verbatim}
+  onNode ns (x,y)
+\end{verbatim}
+geeft de uitkomst
+\begin{verbatim}
+  Nothing
+\end{verbatim}
+als punt \verb!(x,y)! niet op \'e\'en van de nodes uit \verb!ns! ligt.
+Als dat wel zo is, is de uitkomst
+\begin{verbatim}
+  Just n
+\end{verbatim}
+waarbij \verb!n! de geselecteerde node is.
+
+Voorbeelden van het toepassen van de functie \verb!onNode! zijn te vinden in
+de functie \verb!createGraph!
+(let daarbij op het gebruik van pattern-matching).
+
+\paragraph{Opdrachten.}
+U moet onderstaande opdrachten maken door uw eigen functies te defini\"eren,
+en in \verb!prac6.hs!  de benodigde clausules aan de functie
+\verb!doPrac6! toe te voegen.
+Daarbij kunt u gebruik maken van bovenstaande voorgedefinieerde functies.
+
+Bij de overgang van de functie \verb!createGraph! naar de functie
+\verb!doPrac6! (met het commando \verb!6!) zorgt de functie \verb!initPrac6!
+er voor dat de getekende graaf wordt meegenomen.
+Alle overige informatie die nodig is om de graaf te tekenen, wordt niet
+meegenomen.
+
+U kunt de functie \verb!initPrac6! zelf aanvullen. 
+Als u dat doet, moet u ook extra velden aan \verb!MyStore! toevoegen.
+
+In \verb!prac6.hs! is het commando \verb!q! om terug te gaan naar de
+functie \verb!createGraph! al voorgedefinieerd.
+
+Tenslotte is er in \verb!prac6.hs! een functie \verb!drawMypracBottomLine!
+voor\-ge\-de\-fi\-nieerd.
+U kunt de definitie daarvan veranderen om daarmee eventueel behulpzame
+informatie onderaan het scherm te laten afdrukken.
+
+\subsection*{Opgave 1.}
+
+\paragraph{a.}
+Definieer een commando (in de vorm van een toetsaanslag) om een
+node rood te kleuren.
+De node moet met behulp van een muisklik worden geselecteerd.
+Dat wil zeggen: geef \'e\'erst het commando, onthoudt dat dat commando 
+gegeven is, en geef vervolgens een muisklik.
+Een mogelijke oplossing is om een veld toe te voegen aan \verb!MyStore!
+waarin dat wordt opgeslagen.
+
+\paragraph{b.}
+Definieer een commando waarmee alle directe buren van een met een muisklik
+geselecteerde node blauw worden gekleurd.
+Doe dit zowel voor gerichte als voor ongerichte grafen.
+Bij gerichte grafen mogen buren alleen in de pijlrichting worden genomen.
+
+\paragraph{c.}
+Definieer een commando waarmee de graaf weer in de basiskleuren zwart/wit
+kan worden afgebeeld.
+
+
+\subsection*{Opgave 2.}
+\paragraph{a.}
+Schrijf een functie waarmee getest kan worden of een ongerichte graaf
+volledig is (d.w.z.\ er is een edge tussen elke node en elke andere node).
+Deze test moet expliciet alle mogelijke bindingen langslopen (dus niet
+alleen maar nodes en edges tellen).
+
+\paragraph{b.}
+Schrijf een functie om te testen of een ongerichte graaf samenhangend is,
+d.w.z.\ of er een pad loopt van elke node naar elke andere node.
+Daarbij bestaat een pad uit een aantal edges achter elkaar.
+
+\paragraph{c.}
+Schrijf een functie die de lijst van samenhangende subgrafen van een gegeven
+ongerichte graaf oplevert (met ``subgrafen'' worden hier de grootst
+mogelijke subgrafen bedoeld).
+Schrijf een commando waarmee die samenhangende subgrafen elk hun eigen
+kleur krijgen
+(dwz: alle nodes uit een samenhangende subgraaf moeten de\-zelf\-de kleur
+krijgen.
+Uw functie mag zelf beslissen welke kleuren daarvoor worden gekozen).
+
+\subsection*{Opgave 3.}
+\paragraph{a.}
+Schrijf een functie die test of in een gerichte graaf een gegeven
+node \verb!B! bereikbaar is (in overeenstemming met de edgerichting) vanuit een node \verb!A!.
+
+\paragraph{b.}
+Schrijf een functie die (in een gerichte graaf) de lijst van {\em alle\/}
+paden van \verb!A! naar \verb!B! berekent.
+Daarbij is verondersteld dat een pad geen lussen bevat.
+Definieer een commando dat \'e\'en voor \'e\'en die paden kleurt.
+
+\paragraph{c.}
+Definieer met behulp van deze functie een functie die in een gerichte
+{\em en\/} gewogen graaf het {\em kortste\/} pad van \verb!A! naar
+\verb!B! vindt en kleurt.
+Hierbij betekent het begrip ``kortst'' dat het totaal van alle gewichten op
+het pad minimaal moet zijn.
+
+\paragraph{d -- toegift.}
+Een bekend en effici\"ent algoritme om kortste paden in gerichte en gewogen
+grafen te vinden, is het {\em Dijkstra algoritme\/}.
+Dat algoritme begint met een gegeven startnode $S$ en bouwt stap voor stap een
+steeds grotere verzameling $K$ van nodes waarnaar het kortste pad vanuit $S$
+gevonden is.
+Op elke stap wordt een nieuwe node geselecteerd van die nodes buiten $K$ die in
+\'e\'en stap vanuit $K$ bereikbaar zijn, en wel die node waarnaar het pad
+vanuit $S$ het kortste is.
+De geselecteerde node wordt vervolgens toegevoegd aan $K$.
+Als via deze nieuwe node een pad naar een overblijvende node kan worden
+ingekort, wordt dat gedaan.
+Dit gebeurt net zo lang tot alle nodes aan $K$ zijn toegevoegd.
+
+
+\end{document}
