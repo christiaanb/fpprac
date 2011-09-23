@@ -41,7 +41,7 @@ type PanelContent  = (String
 createDefState ::
   PanelContent
   -> [(Int,String)]
-createDefState (_, _, _, _, items) = sort $ map createDefStateItem items
+createDefState (_, _, _, _, items) = map createDefStateItem items
 
 createDefStateItem ::
   PanelItem
