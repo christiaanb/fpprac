@@ -13,7 +13,7 @@ import Debug.Trace
 data MyStore = MyStore
   { myGraph :: Graph
   }
-  
+
 initPrac6 graph = MyStore {myGraph = graph}
 
 main = doGraph doPrac6 initPrac6 myGraph drawMypracBottomLine
@@ -31,7 +31,7 @@ doPrac6 :: MyStore -> Input -> (MyStore,[Output])
 doPrac6 myStore i = (myStore,[])
 
 drawMypracBottomLine :: Graph -> Picture
-drawMypracBottomLine graph = 
+drawMypracBottomLine graph =
   Pictures
     [ Translate 0 (-300 + bottomLineHeight / 2) $ Color white $ rectangleSolid 800 bottomLineHeight
     , Color black $ Line [(-400,height1),(400,height1)]

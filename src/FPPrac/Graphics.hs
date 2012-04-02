@@ -1,6 +1,6 @@
 -- | Open a new window and display the given picture. Should only be called
 -- once during the execution of a program!
-module FPPrac.Graphics 
+module FPPrac.Graphics
   ( module Graphics.Gloss
   , graphicsout
   )
@@ -11,7 +11,7 @@ import qualified Graphics.Gloss as Gloss
 
 -- | Open a new window and display the given picture. Should only be called
 -- once during the execution of a program!
--- 
+--
 --   Use the following commands once the window is open:
 --
 -- 	* Close Window - esc-key.

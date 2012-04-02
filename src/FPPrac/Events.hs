@@ -25,13 +25,15 @@ import FPPrac.GUI.Prompt
 import Graphics.Gloss.Interface.Pure.Game hiding (play)
 import Graphics.Gloss.Interface.IO.Game (playIO)
 import Data.Time (getCurrentTime,utctDayTime)
+import Control.Exception as X
+import Debug.Trace
 
 type PromptInfo = (String,String)
 
 -- | Possible filetypes
-data FileType 
+data FileType
   -- | Text file
-  = TXTFile String 
+  = TXTFile String
   -- | Bitmap file
   | BMPFile Picture
   deriving (Eq,Show)
@@ -103,7 +105,7 @@ data Output -- | Command to change the drawing mode
             --   = (p1:ps, [DrawOnBuffer False, DrawPicture (Color black $ Line [p1,p2])])
             -- handler (p1:ps) (MouseUp p2)
             --   = (p2:p1:ps, [DrawOnBuffer True, DrawPicture (Color black $ Line [p1,p2])])
-            -- @ 
+            -- @
             = DrawOnBuffer Bool
             -- | Draw the picture
             | DrawPicture  Picture
@@ -122,7 +124,7 @@ data Output -- | Command to change the drawing mode
             -- | PanelUpdate visible [(identifier, value)]
             --
             -- Command to change visibility and the content of a panel.
-            -- 
+            --
             -- Note: not all controls need to be listed, the order can be
             -- arbitrary
             --
@@ -138,7 +140,7 @@ data Output -- | Command to change the drawing mode
             -- The default content is returned
             --
             -- Note: the read file command generates following input event:
-            -- 'File fileName content'           
+            -- 'File fileName content'
             | ReadFile FilePath FileType
             -- | SaveFile fileName content
             --
@@ -148,7 +150,7 @@ data Output -- | Command to change the drawing mode
             -- Save fileName success (True/False)
             | SaveFile FilePath FileType
             -- | Request the current time of day in seconds
-            -- 
+            --
             -- Note: the gettime command generates the following input event:
             -- 'Time timeOfDay'
             | GetTime
@@ -168,18 +170,18 @@ data EventState a = EventState { screen       :: Picture
                                , userState    :: a
                                }
 
-eventToInput (EventKey (Char x) 								Down _ _) = KeyIn x
-eventToInput (EventKey (SpecialKey  KeySpace)   Down _ p) = KeyIn ' '
-eventToInput (EventKey (SpecialKey  KeyTab)     Down _ p) = KeyIn '\t'
-eventToInput (EventKey (SpecialKey  KeyEnter)   Down _ p) = KeyIn '\n'
+eventToInput (EventKey (Char x) 								  Down _ _) = KeyIn x
+eventToInput (EventKey (SpecialKey  KeySpace)     Down _ p) = KeyIn ' '
+eventToInput (EventKey (SpecialKey  KeyTab)       Down _ p) = KeyIn '\t'
+eventToInput (EventKey (SpecialKey  KeyEnter)     Down _ p) = KeyIn '\n'
 eventToInput (EventKey (SpecialKey  KeyBackspace) Down _ p) = KeyIn '\b'
-eventToInput (EventKey (MouseButton LeftButton) Down _ p) = MouseDown p
-eventToInput (EventKey (MouseButton LeftButton) Up   _ p) = MouseUp p
-eventToInput (EventMotion p)															= MouseMotion p
-eventToInput e                                            = Invalid
+eventToInput (EventKey (MouseButton LeftButton)   Down _ p) = MouseDown p
+eventToInput (EventKey (MouseButton LeftButton)   Up   _ p) = MouseUp p
+eventToInput (EventMotion p)															  = MouseMotion p
+eventToInput e                                              = Invalid
 
--- | The event mode lets you manage your own input. 
--- Pressing ESC will still abort the program, but you don't get automatic 
+-- | The event mode lets you manage your own input.
+-- Pressing ESC will still abort the program, but you don't get automatic
 -- pan and zoom controls like with graphicsout. Should only be called once
 -- during the execution of a program!
 installEventHandler ::
@@ -220,15 +222,15 @@ handleInput ::
   -> EventState userState
   -> Input
   -> EventState userState
-handleInput handler dcTime s@(EventState {guiMode = FreeMode, ..}) i 
+handleInput handler dcTime s@(EventState {guiMode = FreeMode, ..}) i
   = s' {userState = userState', doubleClickT = doubleClickT', storedInputs = []}
   where
     (doubleClickT',dc)    = registerDoubleClick dcTime doubleClickT i
     remainingInputs       = storedInputs ++ (if null dc then [i] else dc)
     (userState',outps)    = mapAccumL handler userState remainingInputs
-    s'                    = foldl handleOutput s $ concat outps 
+    s'                    = foldl handleOutput s $ concat outps
 
-handleInput handler dcTime s@(EventState {guiMode = PanelMode, panel = Just (panelContents,itemState), ..}) (MouseDown (x,y)) 
+handleInput handler dcTime s@(EventState {guiMode = PanelMode, panel = Just (panelContents,itemState), ..}) (MouseDown (x,y))
   | isClicked /= Nothing = s''
   | otherwise            = s
   where
@@ -238,7 +240,7 @@ handleInput handler dcTime s@(EventState {guiMode = PanelMode, panel = Just (pan
     (userState',outps) = handler userState (Panel (fst itemClicked) $ filter ((/= "") . snd) itemState')
     s'                 = s {screen = Pictures [buffer,drawPanel panelContents itemState'], panel = Just (panelContents,itemState'), userState = userState'}
     s''                = foldl handleOutput s' outps
-    
+
 
 handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, ..}) (KeyIn '\b')
   | pContent /= [] = s'
@@ -263,7 +265,7 @@ handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, .
     s'        = s {guiMode = PromptMode pInfo pContent', screen = screen'}
 
 handleInput handler dcTime s i = s
-    
+
 registerDoubleClick d 0 (MouseDown _)     = (d  ,[])
 registerDoubleClick _ n (MouseDown (x,y)) = (0  ,[MouseDoubleClick (x,y)])
 registerDoubleClick _ 0 NoInput           = (0  ,[])
@@ -272,42 +274,42 @@ registerDoubleClick _ n _                 = (n  ,[])
 
 handleOutput s (DrawOnBuffer b) = s {drawOnBuffer = b}
 handleOutput s ScreenClear      = s {buffer = Blank, screen = Blank}
-handleOutput s@(EventState {..}) (DrawPicture p) = 
-  s { buffer = if drawOnBuffer 
-        then Pictures [buffer, p] 
+handleOutput s@(EventState {..}) (DrawPicture p) =
+  s { buffer = if drawOnBuffer
+        then Pictures [buffer, p]
         else buffer
     , screen = Pictures [buffer, p]
     }
 
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(ReadFile _ _) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
-  
+
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(SaveFile fp ft) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
 
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(GetTime) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
 
-handleOutput s@(EventState {..}) (PanelCreate panelContent) 
+handleOutput s@(EventState {..}) (PanelCreate panelContent)
   = s {panel = Just (panelContent,defItemState)}
   where
     defItemState = createDefState panelContent
 
-handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelUpdate True _) 
+handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelUpdate True _)
   = s {guiMode = PanelMode, screen = Pictures [buffer,drawPanel panelContents itemState]}
 
-handleOutput s@(EventState {panel = Nothing}) (PanelUpdate True _) 
+handleOutput s@(EventState {panel = Nothing}) (PanelUpdate True _)
   = s
 
-handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelUpdate False _) 
+handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelUpdate False _)
   = s {guiMode = FreeMode, screen = buffer, panel = Just (panelContents,defItemState)}
   where
     defItemState = createDefState panelContents
 
-handleOutput s@(EventState {panel = Nothing, ..}) (PanelUpdate False _) 
+handleOutput s@(EventState {panel = Nothing, ..}) (PanelUpdate False _)
   = s {guiMode = FreeMode, screen = buffer}
 
-handleOutput s@(EventState {..}) (GraphPrompt promptInfo) 
+handleOutput s@(EventState {..}) (GraphPrompt promptInfo)
   = s {guiMode = PromptMode promptInfo "", screen = Pictures [buffer,drawPrompt promptInfo ""]}
 
 handleIO :: Output -> IO Input
@@ -333,6 +335,6 @@ handleIO (SaveFile filePath (BMPFile _)) = return $ Save filePath False
 
 handleIO GetTime = do
   t <- fmap utctDayTime $ getCurrentTime
-  return $ Time (fromRational $ toRational t) 
+  return $ Time (fromRational $ toRational t)
 
 handleIO _  = return Invalid

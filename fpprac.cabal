@@ -13,7 +13,7 @@ Version:             0.3.1
 Synopsis:            Functioneel Programmeren Practicum
 
 -- A longer description of the package.
--- Description:         
+-- Description:
 
 -- The license under which the package is released.
 License:             BSD3
@@ -29,7 +29,7 @@ Author:              Christiaan Baaij
 Maintainer:          christiaan.baaij@gmail.com
 
 -- A copyright notice.
--- Copyright:           
+-- Copyright:
 
 Category:            Game
 
@@ -37,7 +37,7 @@ Build-type:          Simple
 
 -- Extra files to be distributed with the package, such as examples or
 -- a README.
--- Extra-source-files:  
+-- Extra-source-files:
 
 -- Constraint on the version of Cabal needed to build this package.
 Cabal-version:       >=1.2
@@ -58,10 +58,10 @@ Library
   Build-depends:       base == 4.*,
                        gloss >= 1.7.1.1,
                        time > 1.2
-  
+
   -- Modules not exported by this package.
   Other-modules:       FPPrac.Prelude.Number, FPPrac.GUI.Panel, FPPrac.GUI.Prompt
-  
+
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
-  -- Build-tools:         
-  
+  -- Build-tools:
+
