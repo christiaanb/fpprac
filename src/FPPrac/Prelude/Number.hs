@@ -49,7 +49,8 @@ instance Real Number where
 
 instance Enum Number where
   toEnum         = I . toInteger
-  fromEnum (I i) = fromInteger i
+  fromEnum (I i) = fromEnum i
+  fromEnum (F f) = fromEnum f
 
 instance Integral Number where
   quotRem (I i1) (I i2) = let (i1',i2') = quotRem i1 i2 in (I i1', I i2')
@@ -59,7 +60,7 @@ instance Integral Number where
   divMod (F _)      _   = error "divMod: first argument is not an integer"
   divMod _      (F _)   = error "divMod: second argument is not an integer"
   toInteger (I i)       = i
-  toInteger (F f)       = error "Can not use 'toInteger' to convert float to integer"
+  toInteger (F _)       = error "Can not use 'toInteger' to convert float to integer"
 
 instance Fractional Number where
   (/) (I i1) (I i2) = F $ (fromInteger i1) / (fromInteger i2)
@@ -72,13 +73,13 @@ instance RealFrac Number where
   properFraction (F f) = let (b,a) = properFraction f in (b, F a)
   properFraction (I i) = let (b,a) = properFraction (fromIntegral i) in (b, F a)
   truncate (F f)       = truncate f
-  truncate (I i)       = truncate (fromIntegral i)
+  truncate (I i)       = truncate ((fromIntegral i) :: Float)
   round (F f)          = round f
-  round (I i)          = round (fromIntegral i)
+  round (I i)          = round ((fromIntegral i) :: Float)
   ceiling (F f)        = ceiling f
-  ceiling (I i)        = ceiling (fromIntegral i)
+  ceiling (I i)        = ceiling ((fromIntegral i) :: Float)
   floor (F f)          = floor f
-  floor (I i)          = floor (fromIntegral i)
+  floor (I i)          = floor ((fromIntegral i) :: Float)
 
 instance Floating Number where
   pi                    = F pi

@@ -1,6 +1,6 @@
--- | The 'FPPrac.Prelude' defines the 'Number' type (which is like Amanda's 
+-- | The 'FPPrac.Prelude' defines the 'Number' type (which is like Amanda's
 -- 'num' type), and hides the intricacies of Haskell's Type Classes
--- from new users when dealing with number. Also defines corresponding 
+-- from new users when dealing with number. Also defines corresponding
 -- 'Prelude' functions that use this new 'Number' type.
 module FPPrac.Prelude
   ( module Prelude
@@ -32,6 +32,7 @@ length = I . toInteger . P.length
 -- | List index (subscript) operator, starting from 0.
 (!!) :: [a] -> Number -> a
 xs !! (I i) = xs P.!! (fromInteger i)
+_  !! _     = error "trying to index (!!) using a floating number"
 
 -- | 'replicate' @n x@ is a list of length @n@ with @x@ the value of
 -- every element.

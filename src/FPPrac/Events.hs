@@ -10,7 +10,7 @@ module FPPrac.Events
   , Input (..)
   , Output (..)
   , PanelItemType (..)
-  , PromptInfo (..)
+  , PromptInfo
   , PanelContent
   , PanelItem
   , installEventHandler
@@ -18,7 +18,6 @@ module FPPrac.Events
 where
 
 import Data.List (mapAccumL)
-import Data.Maybe (fromMaybe)
 import FPPrac.Graphics
 import FPPrac.GUI.Panel
 import FPPrac.GUI.Prompt
@@ -26,7 +25,6 @@ import Graphics.Gloss.Interface.Pure.Game hiding (play)
 import Graphics.Gloss.Interface.IO.Game (playIO)
 import Data.Time (getCurrentTime,utctDayTime)
 import Control.Exception as X
-import Debug.Trace
 
 type PromptInfo = (String,String)
 
@@ -170,15 +168,18 @@ data EventState a = EventState { screen       :: Picture
                                , userState    :: a
                                }
 
+eventToInput ::
+  Event
+  -> Input
 eventToInput (EventKey (Char x) 								  Down _ _) = KeyIn x
-eventToInput (EventKey (SpecialKey  KeySpace)     Down _ p) = KeyIn ' '
-eventToInput (EventKey (SpecialKey  KeyTab)       Down _ p) = KeyIn '\t'
-eventToInput (EventKey (SpecialKey  KeyEnter)     Down _ p) = KeyIn '\n'
-eventToInput (EventKey (SpecialKey  KeyBackspace) Down _ p) = KeyIn '\b'
+eventToInput (EventKey (SpecialKey  KeySpace)     Down _ _) = KeyIn ' '
+eventToInput (EventKey (SpecialKey  KeyTab)       Down _ _) = KeyIn '\t'
+eventToInput (EventKey (SpecialKey  KeyEnter)     Down _ _) = KeyIn '\n'
+eventToInput (EventKey (SpecialKey  KeyBackspace) Down _ _) = KeyIn '\b'
 eventToInput (EventKey (MouseButton LeftButton)   Down _ p) = MouseDown p
 eventToInput (EventKey (MouseButton LeftButton)   Up   _ p) = MouseUp p
 eventToInput (EventMotion p)															  = MouseMotion p
-eventToInput e                                              = Invalid
+eventToInput _                                              = Invalid
 
 -- | The event mode lets you manage your own input.
 -- Pressing ESC will still abort the program, but you don't get automatic
@@ -199,7 +200,7 @@ installEventHandler name handler initState p dcTime = playIO
   (EventState p p True [] [] 0 FreeMode Nothing initState)
   (return . screen)
   (\e s -> handleInputIO handler dcTime s (eventToInput e))
-  (\t s -> handleInputIO handler dcTime s NoInput)
+  (\_ s -> handleInputIO handler dcTime s NoInput)
 
 handleInputIO ::
   forall userState
@@ -230,7 +231,7 @@ handleInput handler dcTime s@(EventState {guiMode = FreeMode, ..}) i
     (userState',outps)    = mapAccumL handler userState remainingInputs
     s'                    = foldl handleOutput s $ concat outps
 
-handleInput handler dcTime s@(EventState {guiMode = PanelMode, panel = Just (panelContents,itemState), ..}) (MouseDown (x,y))
+handleInput handler _ s@(EventState {guiMode = PanelMode, panel = Just (panelContents,itemState), ..}) (MouseDown (x,y))
   | isClicked /= Nothing = s''
   | otherwise            = s
   where
@@ -242,7 +243,7 @@ handleInput handler dcTime s@(EventState {guiMode = PanelMode, panel = Just (pan
     s''                = foldl handleOutput s' outps
 
 
-handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, ..}) (KeyIn '\b')
+handleInput _ _ s@(EventState {guiMode = PromptMode pInfo pContent, ..}) (KeyIn '\b')
   | pContent /= [] = s'
   | otherwise      = s
   where
@@ -250,28 +251,37 @@ handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, .
     screen'   = Pictures [buffer,drawPrompt pInfo pContent']
     s'        = s {guiMode = PromptMode pInfo pContent', screen = screen'}
 
-handleInput handler dcTime s@(EventState {guiMode = PromptMode (pName,pInfo) pContent, ..}) (KeyIn '\n')
+handleInput handler _ s@(EventState {guiMode = PromptMode (pName,_) pContent, ..}) (KeyIn '\n')
   = s''
   where
     (userState',outps) = handler userState (Prompt (pName,pContent))
     s'                 = s {guiMode = FreeMode, screen = buffer, userState = userState'}
     s''                = foldl handleOutput s' outps
 
-handleInput handler dcTime s@(EventState {guiMode = PromptMode pInfo pContent, ..}) (KeyIn x)
+handleInput _ _ s@(EventState {guiMode = PromptMode pInfo pContent, ..}) (KeyIn x)
   = s'
   where
     pContent' = pContent ++ [x]
     screen'   = Pictures [buffer,drawPrompt pInfo pContent']
     s'        = s {guiMode = PromptMode pInfo pContent', screen = screen'}
 
-handleInput handler dcTime s i = s
+handleInput _ _ s _ = s
 
+registerDoubleClick ::
+  Int
+  -> Int
+  -> Input
+  -> (Int,[Input])
 registerDoubleClick d 0 (MouseDown _)     = (d  ,[])
-registerDoubleClick _ n (MouseDown (x,y)) = (0  ,[MouseDoubleClick (x,y)])
+registerDoubleClick _ _ (MouseDown (x,y)) = (0  ,[MouseDoubleClick (x,y)])
 registerDoubleClick _ 0 NoInput           = (0  ,[])
 registerDoubleClick _ n NoInput           = (n-1,[])
 registerDoubleClick _ n _                 = (n  ,[])
 
+handleOutput ::
+  EventState a
+  -> Output
+  -> EventState a
 handleOutput s (DrawOnBuffer b) = s {drawOnBuffer = b}
 handleOutput s ScreenClear      = s {buffer = Blank, screen = Blank}
 handleOutput s@(EventState {..}) (DrawPicture p) =
@@ -284,7 +294,7 @@ handleOutput s@(EventState {..}) (DrawPicture p) =
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(ReadFile _ _) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
 
-handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(SaveFile fp ft) =
+handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(SaveFile _ _) =
   s {guiMode = PerformIO, storedOutputs = storedOutputs ++ [i]}
 
 handleOutput s@(EventState {guiMode = FreeMode, ..}) i@(GetTime) =
@@ -301,7 +311,7 @@ handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelU
 handleOutput s@(EventState {panel = Nothing}) (PanelUpdate True _)
   = s
 
-handleOutput s@(EventState {panel = Just (panelContents,itemState), ..}) (PanelUpdate False _)
+handleOutput s@(EventState {panel = Just (panelContents,_), ..}) (PanelUpdate False _)
   = s {guiMode = FreeMode, screen = buffer, panel = Just (panelContents,defItemState)}
   where
     defItemState = createDefState panelContents
@@ -311,6 +321,8 @@ handleOutput s@(EventState {panel = Nothing, ..}) (PanelUpdate False _)
 
 handleOutput s@(EventState {..}) (GraphPrompt promptInfo)
   = s {guiMode = PromptMode promptInfo "", screen = Pictures [buffer,drawPrompt promptInfo ""]}
+
+handleOutput s _ = s
 
 handleIO :: Output -> IO Input
 handleIO (ReadFile filePath (TXTFile defContents)) =
