@@ -1,12 +1,12 @@
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
--- | The event mode lets you manage your own input. 
--- Pressing ESC will still closes the window, but you don't get automatic 
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+-- | The event mode lets you manage your own input.
+-- Pressing ESC will still closes the window, but you don't get automatic
 -- pan and zoom controls like with 'graphicsout'. Should only be called once
 -- during the execution of a program!
 module FPPrac.Events
-  ( module Graphics.Gloss.Interface.Game
-  , FileType (..)
+  ( FileType (..)
   , Input (..)
   , Output (..)
   , PanelItemType (..)
@@ -22,7 +22,8 @@ import Data.Maybe (fromMaybe)
 import FPPrac.Graphics
 import FPPrac.GUI.Panel
 import FPPrac.GUI.Prompt
-import Graphics.Gloss.Interface.Game
+import Graphics.Gloss.Interface.Pure.Game hiding (play)
+import Graphics.Gloss.Interface.IO.Game (playIO)
 import Data.Time (getCurrentTime,utctDayTime)
 
 type PromptInfo = (String,String)
@@ -189,15 +190,13 @@ installEventHandler ::
   -> Picture -- ^ Initial Picture
   -> Int -- ^ doubleclick speed
   -> IO ()
-installEventHandler name handler initState p dcTime = gameInWindowIO
-  name
-  (800,600)
-  (20,20)
+installEventHandler name handler initState p dcTime = playIO
+  (InWindow name (800,600) (20,20))
   white
   50
   (EventState p p True [] [] 0 FreeMode Nothing initState)
-  screen
-  (\e s -> handleInput handler dcTime s (eventToInput e))
+  (return . screen)
+  (\e s -> handleInputIO handler dcTime s (eventToInput e))
   (\t s -> handleInputIO handler dcTime s NoInput)
 
 handleInputIO ::
@@ -315,20 +314,20 @@ handleIO :: Output -> IO Input
 handleIO (ReadFile filePath (TXTFile defContents)) =
   (do f <- readFile filePath
       return $ File filePath $ TXTFile f
-  ) `catch`
-  (\_ -> return (File filePath $ TXTFile defContents))
+  ) `X.catch`
+  (\(_ :: IOException) -> return (File filePath $ TXTFile defContents))
 
 handleIO (ReadFile filePath (BMPFile defContents)) =
   (do f <- loadBMP filePath
       return $ File filePath $ BMPFile f
-  ) `catch`
-  (\_ -> return (File filePath $ BMPFile defContents))
-  
-handleIO (SaveFile filePath (TXTFile content)) = 
+  ) `X.catch`
+  (\(_ :: IOException) -> return (File filePath $ BMPFile defContents))
+
+handleIO (SaveFile filePath (TXTFile content)) =
   ( do writeFile filePath content
        return $ Save filePath True
-  ) `catch`
-  (\_ -> return $ Save filePath False)
+  ) `X.catch`
+  (\(_ :: IOException) -> return $ Save filePath False)
 
 handleIO (SaveFile filePath (BMPFile _)) = return $ Save filePath False
 

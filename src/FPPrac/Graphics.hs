@@ -6,7 +6,7 @@ module FPPrac.Graphics
   )
 where
 
-import Graphics.Gloss hiding (displayInWindow,animateInWindow)
+import Graphics.Gloss hiding (display,animate,simulate,play)
 import qualified Graphics.Gloss as Gloss
 
 -- | Open a new window and display the given picture. Should only be called
@@ -22,4 +22,4 @@ import qualified Graphics.Gloss as Gloss
 --
 --	* Zoom Viewport - mouse wheel, or page up\/down-keys.
 graphicsout :: Picture -> IO ()
-graphicsout  = Gloss.displayInWindow "graphicsout" (640,480) (20,20) white
+graphicsout  = Gloss.display (InWindow "graphicsout" (640,480) (20,20)) white
