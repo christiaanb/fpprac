@@ -52,7 +52,7 @@ Library
 
   HS-Source-Dirs:      src
 
-  ghc-options:         -O2 -Wall
+  ghc-options:         -O2 -Wall -fwarn-tabs
 
   -- Packages needed in order to build this package.
   Build-depends:       base == 4.*,

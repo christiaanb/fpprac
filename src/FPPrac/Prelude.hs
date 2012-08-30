@@ -5,11 +5,11 @@
 module FPPrac.Prelude
   ( module Prelude
   , Number
-	, atoi
-	, atof
-	, length
+  , atoi
+  , atof
+  , length
   , (!!)
-	, replicate
+  , replicate
   , take
   , drop
   , splitAt
@@ -17,7 +17,7 @@ module FPPrac.Prelude
 where
 
 import Prelude hiding (Int,Integer,Double,Float,length,(!!),replicate,take,
-	drop,splitAt)
+  drop,splitAt)
 import qualified Prelude as P
 
 import FPPrac.Prelude.Number

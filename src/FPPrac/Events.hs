@@ -40,48 +40,48 @@ data FileType
 data Input -- | No input
            --
            -- Generated every refresh of the eventhandler
-					 = NoInput
-					 -- | Keyboard key x is pressed down; ' ' for space, \\t for tab, \\n for enter
-           | KeyIn 			 Char
-					 -- | Left mouse button is pressed at location (x,y)
-					 | MouseDown   (Float,Float)
-					 -- | Left mouse button is released at location (x,y)
-					 | MouseUp     (Float,Float)
-					 -- | Mouse pointer is moved to location (x,y)
-					 | MouseMotion (Float,Float)
-					 -- | Mouse is double-clicked at location (x,y)
-					 | MouseDoubleClick (Float,Float)
-					 -- | Prompt (windowname,textbox content)
-					 --
-					 -- Content returned from textbox in promptwindow with 'windowname'
-					 | Prompt PromptInfo
-					 -- | Panel buttonId [(controlId, value)]
-					 --
-					 -- Event indicating that in the panel, the button with buttonId is
-					 -- pressed and that at the time the controls had the given value
-					 --
-					 -- Note: the list is ordered by controlId
-					 --
-					 -- - For checkboxes a value \"Y\" indicates that they are checked and
-					 -- a value of \"N\" indicates they are unchecked
-					 --
-					 -- - Buttons have no controlstate
-					 | Panel Int [(Int,String)]
-					 -- | File name content
-					 --
-					 -- The found file with given name, and found content
-					 | File FilePath FileType
-					 -- | Indicates if saving of file at filepath succeeded
-					 | Save FilePath Bool
-					 -- | Response to GetTime
-					 --
-					 -- The time from midnight, 0 <= t < 86401s (because of leap-seconds)
-					 -- It has a precision of 10^-12 s. Leap second is only added if day
-					 -- has leap seconds
-					 | Time Float
-					 -- | Invalid / Unknown input
-					 | Invalid
-	deriving (Eq,Show)
+           = NoInput
+           -- | Keyboard key x is pressed down; ' ' for space, \\t for tab, \\n for enter
+           | KeyIn       Char
+           -- | Left mouse button is pressed at location (x,y)
+           | MouseDown   (Float,Float)
+           -- | Left mouse button is released at location (x,y)
+           | MouseUp     (Float,Float)
+           -- | Mouse pointer is moved to location (x,y)
+           | MouseMotion (Float,Float)
+           -- | Mouse is double-clicked at location (x,y)
+           | MouseDoubleClick (Float,Float)
+           -- | Prompt (windowname,textbox content)
+           --
+           -- Content returned from textbox in promptwindow with 'windowname'
+           | Prompt PromptInfo
+           -- | Panel buttonId [(controlId, value)]
+           --
+           -- Event indicating that in the panel, the button with buttonId is
+           -- pressed and that at the time the controls had the given value
+           --
+           -- Note: the list is ordered by controlId
+           --
+           -- - For checkboxes a value \"Y\" indicates that they are checked and
+           -- a value of \"N\" indicates they are unchecked
+           --
+           -- - Buttons have no controlstate
+           | Panel Int [(Int,String)]
+           -- | File name content
+           --
+           -- The found file with given name, and found content
+           | File FilePath FileType
+           -- | Indicates if saving of file at filepath succeeded
+           | Save FilePath Bool
+           -- | Response to GetTime
+           --
+           -- The time from midnight, 0 <= t < 86401s (because of leap-seconds)
+           -- It has a precision of 10^-12 s. Leap second is only added if day
+           -- has leap seconds
+           | Time Float
+           -- | Invalid / Unknown input
+           | Invalid
+  deriving (Eq,Show)
 
 data Output -- | Command to change the drawing mode
             --
@@ -171,14 +171,14 @@ data EventState a = EventState { screen       :: Picture
 eventToInput ::
   Event
   -> Input
-eventToInput (EventKey (Char x) 								  Down _ _) = KeyIn x
+eventToInput (EventKey (Char x)                   Down _ _) = KeyIn x
 eventToInput (EventKey (SpecialKey  KeySpace)     Down _ _) = KeyIn ' '
 eventToInput (EventKey (SpecialKey  KeyTab)       Down _ _) = KeyIn '\t'
 eventToInput (EventKey (SpecialKey  KeyEnter)     Down _ _) = KeyIn '\n'
 eventToInput (EventKey (SpecialKey  KeyBackspace) Down _ _) = KeyIn '\b'
 eventToInput (EventKey (MouseButton LeftButton)   Down _ p) = MouseDown p
 eventToInput (EventKey (MouseButton LeftButton)   Up   _ p) = MouseUp p
-eventToInput (EventMotion p)															  = MouseMotion p
+eventToInput (EventMotion p)                                = MouseMotion p
 eventToInput _                                              = Invalid
 
 -- | The event mode lets you manage your own input.
