@@ -56,7 +56,7 @@ Library
 
   -- Packages needed in order to build this package.
   Build-depends:       base == 4.*,
-                       gloss >= 1.7.1.1,
+                       gloss >= 1.7.4.2,
                        time > 1.2
 
   -- Modules not exported by this package.
