@@ -14,7 +14,7 @@
 \usepackage{url}
 \usepackage[pdftex]{graphicx}
 
-\title{Manual for the Haskell Environment \\ used in \\ Functioneel Programmeren (192112051)}
+\title{Haskell Environment \\ for \\ Functioneel Programmeren (192112051)}
 \author{Christiaan Baaij}
 
 \date{Kwartiel 1, 2012}
@@ -41,8 +41,39 @@ The \texttt{fpprac} package also defines (in module \emph{FPPrac.Graphics}) the 
 During the exam, lab exercises, and the final assignment(s), you can only use the standard \emph{Prelude} module, and/or, the modules exported by the \texttt{fpprac} package: (\emph{FPPrac, FPPrac.Prelude, FPPrac.Events, FPPrac.Graphics}).
 If you want to deviate from only using the sanctioned modules, and think you have a good (didactically sound) reason, ask for permission from the lecturer and/or teaching assistants first.
 
-\section{Installation}
-This section describes the installation procedure for the Haskell environment used in the functional programming course. Students deviating from this procedure will not get any support from the teaching assistants or teacher if any problems with the Haskell environment occur.
+\section{Installation on lab machines (Windows 7)}
+A working version of the \emph{Haskell Platform} is installed on the lab machines, but not all files necessary for the lab exercises are installed on these machines.
+This section describes the steps required to get the machines in a state required to perform the lab exercises.
+
+\begin{itemize}
+  \item Check if \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin} is included in your \texttt{\%PATH\%} by running: \texttt{echo \%PATH\%}.
+  If it is not:
+  \begin{itemize}
+    \item Start \texttt{regedit} and update the \texttt{HKEY\_CURRENT\_USER/Environment/Path} entry to include the following directory:\\ \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin}.\\ Or, if the registry entry does not exist:
+    \item Open the command-line (\texttt{cmd}) and enter the command:\\
+    \texttt{setx path "C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin"}
+  \end{itemize}
+  \item Create the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is), download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory.
+  \item Start \texttt{regedit} and update the \texttt{HKEY\_CURRENT\_USER/Environment/Path} entry to include the directory: \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin}, where \texttt{\%APPDATA\%} \textbf{MUST} be expanded to the actual directory, e.g.: \texttt{C:\textbackslash{}Users\textbackslash{}baaijcpr\textbackslash{}AppData\textbackslash{}Roaming}
+  \item Logout and log back in.
+  \item Run \texttt{cabal update}.
+  \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config}.
+  \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
+  \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
+  \item Download the \texttt{fpprac} package from \url{http://github.com/christiaanb/fpprac/}.
+  \item Unpack the package in a new separate directory.
+  \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run (from the command line): \texttt{cabal install}.
+  \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
+  \item Add the following two lines to this file, and save it:
+  \begin{description}
+    \item[] \texttt{:set -XNoMonomorphismRestriction}
+    \item[] \texttt{:set -XNoImplicitPrelude}
+  \end{description}
+\end{itemize}
+
+\section{Installation on your own machine}
+This section describes the installation procedure for the Haskell environment used in the functional programming course.
+Students deviating from this procedure will not get any support from the teaching assistants or teacher if any problems with the Haskell environment occur.
 The installation consists of a part equal for all platforms, and a part specific for each platform.
 
 \subsection{For all platforms}
@@ -62,13 +93,13 @@ The installation consists of a part equal for all platforms, and a part specific
 
 \subsection{Windows XP/Vista/7 (tested on: XP SP3, Win7 SP1 64-bit)}
 \begin{itemize}
-  % \item Download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows systems).
+  \item Download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows systems).
   \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
-  \item Open, in your favorite text editor, \texttt{\%appdata\%\textbackslash{}cabal\textbackslash{}config} (where \texttt{\%appdata\%} depends on your system but is usually something like \texttt{C:\textbackslash{}Documents and Settings\textbackslash{}<user>\textbackslash{}Application Data\textbackslash{}}).
-  \item Uncomment the \texttt{documention} line, and set it to \texttt{True}. Save the file.
+  \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config} (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is).
+  \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
   \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
   \item Now go to the directory where you unpacked the \texttt{fpprac} packaged, and run (from the command line): \texttt{cabal install}.
-  \item Open (or create if it does not exist) in your favorite text editor \texttt{\%appdata\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
+  \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
   \item Add the following two lines to this file, and save it:
   \begin{description}
     \item[] \texttt{:set -XNoMonomorphismRestriction}
@@ -94,7 +125,7 @@ The installation consists of a part equal for all platforms, and a part specific
 \subsection{Linux (tested on: Linux Mint Debian Edition (LMDE))}
 \begin{itemize}
   \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
-  \item Open, in your favorite text editor, \texttt{\$HOME/.cabal/config}
+  \item Open, in your favourite text editor, \texttt{\$HOME/.cabal/config}
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
   \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{apt-get install libxrandr-dev} on LMDE), it is required by the Haskell package \texttt{GLFW-b}.
   \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
@@ -112,7 +143,7 @@ As instructed, you have to make sure that generating API documentation is enable
 The reasons you had to update the \emph{GHCi} configuration file are the following:
 \begin{description}
   \item[] \texttt{:set -XNoMonomorphismRestriction} -- lifts certain restriction on the ability to derive polymorphic types for certain functions.
-  If this extension is not set, certain types might be unexpectedly monomorphic.
+  If this extension is not set, certain functions might be unexpectedly monomorphic.
   \item[] \texttt{:set -XNoImplicitPrelude} -- GHC implicitly imports the \emph{Prelude} module, but the \emph{FPPrac} module defines certain functions that have the same name (such as \emph{take} and \emph{drop}), but a different type (\texttt{Number -> [a] -> [a]} instead of \texttt{Int -> [a] -> [a]}).
   So if you don't disable implicitly loading \emph{Prelude}, the compiler will complain that it can find two definitions for a certain function name.
   Note that \emph{FPPrac} exports all the functions from \emph{Prelude}, except those that share names; see the API documentation for which functions.
