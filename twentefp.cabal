@@ -1,5 +1,5 @@
 Name:                twentefp
-Version:             0.4
+Version:             0.4.1
 Synopsis:            Lab Assignments Environment at Univeriteit Twente
 Description:         Lab Assignments Environment at Univeriteit Twente
 License:             BSD3
@@ -10,9 +10,10 @@ Category:            Education
 Build-type:          Simple
 Cabal-version:       >=1.6
 
-Extra-Source-Files:  examples/CreateGraph.hs,
+Extra-Source-Files:  README,
+                     examples/CreateGraph.hs,
                      examples/Graphics.hs,
-                     examples/prac6.hs,
+                     examples/Prac6.hs,
                      examples/RBgraphics.hs,
                      examples/RBrun.hs,
                      examples/RoseTree.hs

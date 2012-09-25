@@ -1,0 +1,28 @@
+= ALL =
+Install the 'gloss' package with the GLFW backend:
+- cabal install gloss --flags="-GLUT GLFW" --enable-documentation
+Install this package:
+- cabal install twentefp --enable-documentation
+
+= Windows =
+- Add the GLUT32.DLL [1] to your "%systemroot%\System32" or "%systemroot%\SysWow64" directory
+- Create "%appdata%\ghc\ghci.conf"
+- Add the following lines to "%appdata%\ghc\ghci.conf":
+:set -XNoImplicitPrelude
+:set -XNoMonomorphisRestriction
+
+= Linux =
+- Create "~/.ghci"
+- Add the following lines to ".ghci":
+:set -XNoImplicitPrelude
+:set -XNoMonomorphisRestriction
+
+= OS X =
+- Create "~/.ghci"
+- Add the following lines to ".ghci":
+:set -XNoImplicitPrelude
+:set -XNoMonomorphisRestriction
+:set -fno-ghci-sandbox
+
+
+[1] http://user.xmission.com/~nate/glut.html
