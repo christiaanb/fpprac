@@ -7,7 +7,7 @@ Name:                fpprac
 -- The package version. See the Haskell package versioning policy
 -- (http://www.haskell.org/haskellwiki/Package_versioning_policy) for
 -- standards guiding when and how versions should be incremented.
-Version:             0.3.1
+Version:             0.4
 
 -- A short (one-line) description of the package.
 Synopsis:            Functioneel Programmeren Practicum
@@ -56,8 +56,9 @@ Library
 
   -- Packages needed in order to build this package.
   Build-depends:       base == 4.*,
-                       gloss >= 1.7.4.2,
-                       time > 1.2
+                       gloss >= 1.7.5.2,
+                       time > 1.2,
+                       parsec > 3
 
   -- Modules not exported by this package.
   Other-modules:       FPPrac.Prelude.Number, FPPrac.GUI.Panel, FPPrac.GUI.Prompt

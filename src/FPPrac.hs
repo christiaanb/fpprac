@@ -5,4 +5,4 @@ where
 
 import FPPrac.Prelude
 
-default ()
+default (Number)

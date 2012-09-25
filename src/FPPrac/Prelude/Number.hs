@@ -1,14 +1,16 @@
 module FPPrac.Prelude.Number
   ( Number(..)
-  , atoi
-  , atof
   )
 where
+
+import Text.ParserCombinators.Parsec
+import qualified Text.ParserCombinators.Parsec.Token as PT
+import Text.ParserCombinators.Parsec.Language (emptyDef)
 
 -- | Combined integral and floating number type
 data Number
   = I Integer
-  | F Float
+  | F Double
 
 instance Eq Number where
   (I i1) == (I i2) = i1 == i2
@@ -122,10 +124,14 @@ instance Floating Number where
   acosh (F f)           = F (acosh f)
   acosh (I i)           = F (acosh $ fromIntegral i)
 
--- | Converts a String to an Integral Number
-atoi :: String -> Number
-atoi = I . read
+lexer :: PT.TokenParser st
+lexer = PT.makeTokenParser emptyDef
 
--- | Converts a String to a Floating Number
-atof :: String -> Number
-atof = F . read
+naturalOrFloat :: CharParser st (Either Integer Double)
+naturalOrFloat = PT.naturalOrFloat lexer
+
+instance Read Number where
+  readsPrec _ = either (const []) id . parse parseRead' "" where
+    parseRead' = do a <- naturalOrFloat
+                    rest <- getInput
+                    return [(either I F a, rest)]

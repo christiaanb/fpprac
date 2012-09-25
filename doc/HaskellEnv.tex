@@ -27,9 +27,6 @@
 
 \section{Introduction}
 Haskell is a well-known non-strict functional programming language, and is available on all major platforms.
-% Students are allowed to use the Haskell environment for the lab exercises, but it is not compulsory: you are certainly allowed to keep on using the Amanda environment.
-% We even warn you that especially the graphical environment used in the Haskell environment \emph{might} be a bit unstable!
-%
 The Haskell environment for the functional programming course consists of three parts, which all need to be installed.
 The first part is the \emph{Haskell Platform}, which contains the Glasgow Haskell Compiler (and Interpreter), and a set of standard libraries and tools.
 Among these tools is \emph{cabal}, which is Haskell's own package manager. The second part is the \texttt{gloss} package, which is a cross-platform, usable from the GHC Interpreter (GHCi), graphics library based on OpenGL.
@@ -37,7 +34,6 @@ It is used by the third part: the \texttt{fpprac} package. The \texttt{fpprac} d
 Later on, when a you have a better understanding of Haskell (and \emph{Type Classes}), you can omit using this \emph{Number} type, and use Haskell's own default numeric types.
 The \texttt{fpprac} package also defines (in module \emph{FPPrac.Graphics}) the \emph{graphicsout} function which displays a value of type \emph{Picture}. Additionally, the module \emph{FPPrac.Events} defines the \emph{installEventHandler} which forwards keyboard/mouse input to a user-defined function, and displays the picture returned by that same user-defined function.
 
-% A notice to all students using the Haskell environment instead of the Amanda environment: you are only allowed to reference functions equivalent to the Amanda built-in functions on the final exam!
 During the exam, lab exercises, and the final assignment(s), you can only use the standard \emph{Prelude} module, and/or, the modules exported by the \texttt{fpprac} package: (\emph{FPPrac, FPPrac.Prelude, FPPrac.Events, FPPrac.Graphics}).
 If you want to deviate from only using the sanctioned modules, and think you have a good (didactically sound) reason, ask for permission from the lecturer and/or teaching assistants first.
 
@@ -46,22 +42,18 @@ A working version of the \emph{Haskell Platform} is installed on the lab machine
 This section describes the steps required to get the machines in a state required to perform the lab exercises.
 
 \begin{itemize}
-  \item Check if \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin} is included in your \texttt{\%PATH\%} by running: \texttt{echo \%PATH\%}.
+  \item Check if \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin} is included in your \texttt{\%PATH\%} by running: \texttt{echo \%PATH\%}, from the command-line.
   If it is not:
   \begin{itemize}
-    \item Start \texttt{regedit} and update the \texttt{HKEY\_CURRENT\_USER/Environment/Path} entry to include the following directory:\\ \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin}.\\ Or, if the registry entry does not exist:
-    \item Open the command-line (\texttt{cmd}) and enter the command:\\
-    \texttt{setx path "C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin"}
+    \item From the Start-menu, run: \texttt{Edit environment variables for your account}, and update your user \emph{Path} with the directory:\\ \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin}.
   \end{itemize}
   \item Create the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is), download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory.
-  \item Start \texttt{regedit} and update the \texttt{HKEY\_CURRENT\_USER/Environment/Path} entry to include the directory: \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin}, where \texttt{\%APPDATA\%} \textbf{MUST} be expanded to the actual directory, e.g.: \texttt{C:\textbackslash{}Users\textbackslash{}baaijcpr\textbackslash{}AppData\textbackslash{}Roaming}
-  \item Logout and log back in.
+  \item From the Start-menu, run: \texttt{Edit environment variables for your account}, and update your user \emph{Path} with the directory: \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin}, where \texttt{\%APPDATA\%} \textbf{MUST} be expanded to the actual directory, e.g.: \texttt{C:\textbackslash{}Users\textbackslash{}baaijcpr\textbackslash{}AppData\textbackslash{}Roaming}
   \item Run \texttt{cabal update}.
   \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config}.
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
-  \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
-  \item Download the \texttt{fpprac} package from \url{http://github.com/christiaanb/fpprac/}.
-  \item Unpack the package in a new directory.
+  \item Download the \texttt{gloss-1.7.4.2.tar.gz} and \texttt{fpprac-0.3.1.tar.gz} packages from Blackboard and unpack them in separate directories.
+  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
   \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
   \item Add the following two lines to this file, and save it:
@@ -80,8 +72,7 @@ The installation consists of a part equal for all platforms, and a part specific
 \begin{itemize}
   \item Download the \emph{Haskell Platform}, version 2012.2.0.0, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if its is available for your platform, and recommended over the 32-bit version!
   \item Follow the installation instructions of the Haskell Platform; Linux users: read the subsection below.
-  \item Download the \texttt{fpprac} package from \url{http://github.com/christiaanb/fpprac/}.
-  \item Unpack the package in a new directory.
+  \item Download the \texttt{gloss-1.7.4.2.tar.gz} and \texttt{fpprac-0.3.1.tar.gz} packages from Blackboard and unpack them in separate directories.
 \end{itemize}
 
 \subsubsection{Installing Haskell on Linux}
@@ -97,7 +88,7 @@ The installation consists of a part equal for all platforms, and a part specific
   \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
   \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config} (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is).
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
-  \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
+  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
   \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
   \item Add the following two lines to this file, and save it:
@@ -111,8 +102,8 @@ The installation consists of a part equal for all platforms, and a part specific
 \begin{itemize}
   \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
   \item Open, in your favourite text editor, \texttt{\$HOME/.cabal/config} and make sure the \texttt{documentation} line is uncommented and set to \texttt{True}. If this is not the case, change the file accordingly, and save.
-  \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run: \texttt{cabal install}.
+  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
+  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favourite text editor \texttt{\$HOME/.ghci}.
   \item Add the following four lines to this file, and save it:
   \begin{description}
@@ -128,8 +119,8 @@ The installation consists of a part equal for all platforms, and a part specific
   \item Open, in your favourite text editor, \texttt{\$HOME/.cabal/config}
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
   \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{apt-get install libxrandr-dev} on LMDE), it is required by the Haskell package \texttt{GLFW-b}.
-  \item From the command line, run: \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}.
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run: \texttt{cabal install}.
+  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
+  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
   \item Open (or create if it does not exist) in your favourite text editor \texttt{\$HOME/.ghci}.
   \item Add the following two lines to this file, and save it:
   \begin{description}

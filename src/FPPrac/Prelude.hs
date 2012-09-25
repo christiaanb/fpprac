@@ -5,8 +5,8 @@
 module FPPrac.Prelude
   ( module Prelude
   , Number
-  , atoi
-  , atof
+  , ord
+  , chr
   , length
   , (!!)
   , replicate
@@ -16,13 +16,13 @@ module FPPrac.Prelude
   )
 where
 
-import Prelude hiding (Int,Integer,Double,Float,length,(!!),replicate,take,
-  drop,splitAt)
+import Prelude hiding (length,(!!),replicate,take,drop,splitAt)
 import qualified Prelude as P
+import Data.Char (ord,chr)
 
 import FPPrac.Prelude.Number
 
-default ()
+default (Number)
 infixl 9 !!
 
 -- | /O(n)/. 'length' returns the length of a finite list as a 'Number'.
