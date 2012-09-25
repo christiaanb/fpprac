@@ -29,7 +29,6 @@ letterheight     = 16.0
 treewidth :: RoseTree -> Float
 treewidth (RoseNode a ts) = maximum [1.0, fromIntegral $ length a, sum (map treewidth ts)]
 
-
 ---------------coordinaten van de wortels ve (sub)boom----------
 -- hor_pos berekent de horizontale positie van de wortel van de
 --    i-de boom uit een lijst ts van bomen - BINNEN die lijst van bomen.
