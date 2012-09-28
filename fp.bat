@@ -57,5 +57,6 @@ set ghc_package_path=P:\haskell\ghc;
 setx ghc_package_path P:\haskell\ghc;
 set path=%PATH%;P:\haskell\bin
 setx path P:\haskell\bin
+md %appdata%/ghc
 echo :set -XNoImplicitPrelude >> %appdata%/ghc/ghci.conf
 echo :set -NoMonomorphismRestriction >> %appdata%/ghc/ghci.conf
