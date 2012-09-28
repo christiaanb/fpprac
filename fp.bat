@@ -16,7 +16,7 @@ IF NOT EXIST P:\haskell\ghc\package.cache (
   cabal update
   cabal install hscolour --enable-documentation --prefix=P:\haskell\lib --docdir=P:\haskell\doc --bindir=P:\haskell\bin --doc-index-file=P:\haskell\doc\index.html
   cabal install gloss --flags="-GLUT GLFW" --enable-documentation --haddock-hyperlink-source --prefix=P:\haskell\lib --docdir=P:\haskell\doc --bindir=P:\haskell\bin --doc-index-file=P:\haskell\doc\index.html
-  cabal install twentefp
+  cabal install twentefp --enable-documentation --haddock-hyperlink-source --prefix=P:\haskell\lib --docdir=P:\haskell\doc --doc-index-file=P:\haskell\doc\index.html
   xcopy %appdata%\ghc\i386-mingw32-7.4.1\package.conf.d P:\haskell\ghc /y
   ghc-pkg recache --package-conf=P:\haskell\ghc
 :install-fp-end
