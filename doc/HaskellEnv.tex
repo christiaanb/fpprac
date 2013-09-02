@@ -45,8 +45,7 @@ This section describes the steps required to get the machines in a state require
   \item Download \texttt{fp.bat} from Blackboard.
   \item Run this file from the command-line every time you login on a machine:
     \begin{itemize}
-      \item The first time it installs the necessary files in you home/student directory (on \texttt{P:\textbackslash{}haskell}).
-      \item Every time (also the first) it sets up the environment variables so that the system can find the necessary files.
+      \item Every time it defines/alters certain environment variables so that the system can find the necessary files on the \texttt{U:\textbackslash{}} drive.
     \end{itemize}
 \end{itemize}
 
@@ -63,8 +62,8 @@ The installation consists of a part equal for all platforms, and a part specific
 
 \subsubsection{Installing Haskell on Linux}
 \begin{itemize}
-  \item Installing a GHC version of the 7.* branch most likely suffices for running the graphical environment. Also make sure you install the \texttt{cabal}(\texttt{-install}) binary (0.10.* for GHC 7.0.*, 0.12.* for GHC 7.2.*, 0.14.* for GHC 7.4.*, and 0.16.* for GHC 7.6.*). If you fail to install the graphical environment, follow the instructions of at the second bullet point.
-  \item If version 2013.2.0.0 of the Haskell Platform is not included in your package manager (as is the case with LMDE), follow the instructions found on the Haskell Platform page to install GHC 7.6.3 manually (binary distribution), followed by a manual install (from source) of the Haskell Platform tools and libraries.
+  \item Installing a GHC version of the 7.* branch most likely suffices for running the graphical environment. Version 7.6.3 is however recommended. Also make sure you install the \texttt{cabal}(\texttt{-install}) binary (0.10.* for GHC 7.0.*, 0.12.* for GHC 7.2.*, 0.14.* for GHC 7.4.*, and 0.16.* for GHC 7.6.*). If you fail to install the graphical environment, follow the instructions at the second bullet point.
+  \item If version 2013.2.0.0 of the Haskell Platform is not included in your package manager, follow the instructions found on the Haskell Platform page to install GHC 7.6.3 manually (binary distribution), followed by a manual install (from source) of the Haskell Platform tools and libraries.
   To install GHC 7.6.3 and Haskell Platform 2013.2.0.0 on LMDE you need the following libraries: \texttt{libgmp-dev}, \texttt{libz-dev}, \texttt{libgl1-mesa-dev}, \texttt{libglu1-mesa-dev}, and \texttt{freeglut3-dev}.
 \end{itemize}
 
