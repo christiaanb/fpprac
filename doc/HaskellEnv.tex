@@ -17,7 +17,7 @@
 \title{Haskell Environment \\ for \\ Functioneel Programmeren (192112051)}
 \author{Christiaan Baaij}
 
-\date{Kwartiel 1, 2012}
+\date{Kwartiel 1, 2013}
 
 \begin{document}
 
@@ -42,25 +42,12 @@ A working version of the \emph{Haskell Platform} is installed on the lab machine
 This section describes the steps required to get the machines in a state required to perform the lab exercises.
 
 \begin{itemize}
-  \item Check if \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin} is included in your \texttt{\%PATH\%} by running: \texttt{echo \%PATH\%}, from the command-line.
-  If it is not:
-  \begin{itemize}
-    \item From the Start-menu, run: \texttt{Edit environment variables for your account}, and update your user \emph{Path} with the directory:\\ \texttt{C:\textbackslash{}Program Files (x86)\textbackslash{}Haskell Platform\textbackslash{}2012.2.0.0\textbackslash{}lib\textbackslash{}extralibs\textbackslash{}bin}.
-  \end{itemize}
-  \item Create the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is), download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in the \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin} directory.
-  \item From the Start-menu, run: \texttt{Edit environment variables for your account}, and update your user \emph{Path} with the directory: \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}bin}, where \texttt{\%APPDATA\%} \textbf{MUST} be expanded to the actual directory, e.g.: \texttt{C:\textbackslash{}Users\textbackslash{}baaijcpr\textbackslash{}AppData\textbackslash{}Roaming}
-  \item Run \texttt{cabal update}.
-  \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config}.
-  \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
-  \item Download the \texttt{gloss-1.7.4.2.tar.gz} and \texttt{fpprac-0.3.1.tar.gz} packages from Blackboard and unpack them in separate directories.
-  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
-  \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
-  \item Add the following two lines to this file, and save it:
-  \begin{description}
-    \item[] \texttt{:set -XNoMonomorphismRestriction}
-    \item[] \texttt{:set -XNoImplicitPrelude}
-  \end{description}
+  \item Download \texttt{fp.bat} from Blackboard.
+  \item Run this file from the command-line every time you login on a machine:
+    \begin{itemize}
+      \item The first time it installs the necessary files in you home/student directory (on \texttt{P:\textbackslash{}haskell}).
+      \item Every time (also the first) it sets up the environment variables so that the system can find the necessary files.
+    \end{itemize}
 \end{itemize}
 
 \section{Installation on your own machine}
@@ -70,26 +57,26 @@ The installation consists of a part equal for all platforms, and a part specific
 
 \subsection{For all platforms}
 \begin{itemize}
-  \item Download the \emph{Haskell Platform}, version 2012.2.0.0, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if its is available for your platform, and recommended over the 32-bit version!
+  \item Download the \emph{Haskell Platform}, version 2013.2.0.0, for your platform from \url{http://hackage.haskell.org/platform/}. Only download a 64-bit version if its is available for your platform, and recommended over the 32-bit version!
   \item Follow the installation instructions of the Haskell Platform; Linux users: read the subsection below.
-  \item Download the \texttt{gloss-1.7.4.2.tar.gz} and \texttt{fpprac-0.3.1.tar.gz} packages from Blackboard and unpack them in separate directories.
 \end{itemize}
 
 \subsubsection{Installing Haskell on Linux}
 \begin{itemize}
-  \item Installing a GHC version of the 7.* branch most likely suffices for running the graphical environment. Also make sure you install the \texttt{cabal}(\texttt{-install}) binary (0.10.* for GHC 7.0.*, 0.12.* for GHC 7.2.*, and 0.14.* for GHC 7.4.*). If you fail to install the graphical environment, follow the instructions of at the second bullet point.
-  \item If version 2012.2.0.0 of the Haskell Platform is not included in your package manager (as is the case with LMDE), follow the instructions found on the Haskell Platform page to install GHC 7.4.1 manually (binary distribution), followed by a manual install (from source) of the Haskell Platform tools and libraries.
-  To install GHC 7.4.1 and Haskell Platform 2012.2.0.0 on LMDE you need the following libraries: \texttt{libgmp-dev}, \texttt{libz-dev}, \texttt{libgl1-mesa-dev}, \texttt{libglu1-mesa-dev}, and \texttt{freeglut3-dev}.
+  \item Installing a GHC version of the 7.* branch most likely suffices for running the graphical environment. Also make sure you install the \texttt{cabal}(\texttt{-install}) binary (0.10.* for GHC 7.0.*, 0.12.* for GHC 7.2.*, 0.14.* for GHC 7.4.*, and 0.16.* for GHC 7.6.*). If you fail to install the graphical environment, follow the instructions of at the second bullet point.
+  \item If version 2013.2.0.0 of the Haskell Platform is not included in your package manager (as is the case with LMDE), follow the instructions found on the Haskell Platform page to install GHC 7.6.3 manually (binary distribution), followed by a manual install (from source) of the Haskell Platform tools and libraries.
+  To install GHC 7.6.3 and Haskell Platform 2013.2.0.0 on LMDE you need the following libraries: \texttt{libgmp-dev}, \texttt{libz-dev}, \texttt{libgl1-mesa-dev}, \texttt{libglu1-mesa-dev}, and \texttt{freeglut3-dev}.
 \end{itemize}
 
 \subsection{Windows XP/Vista/7 (tested on: XP SP3, Win7 SP1 64-bit)}
 \begin{itemize}
   \item Download the \texttt{glut32.dll} (\url{http://user.xmission.com/~nate/glut.html}), and put it in your\newline{} \texttt{\%SystemRoot\%\textbackslash{}System32} directory (or \texttt{\%systemroot\%\textbackslash{}SysWOW64} for 64-bit Windows systems).
-  \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Make sure that the \texttt{cabal} executable can be found in your \texttt{\%PATH\%} (should be done by the \emph{Haskell Platform} Installation).
+  \item Run (from the command line): \texttt{cabal update}.
   \item Open, in your favorite text editor, \texttt{\%APPDATA\%\textbackslash{}cabal\textbackslash{}config} (run: \texttt{echo \%APPDATA\%}, if you don't know which directory \texttt{\%APPDATA\%} is).
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
-  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
+  \item Run (form the command line): \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}
+  \item Run (from the command line): \texttt{cabal install twentefp}.
   \item Open (or create if it does not exist) in your favorite text editor \texttt{\%APPDATA\%\textbackslash{}ghc\textbackslash{}ghci.conf}.
   \item Add the following two lines to this file, and save it:
   \begin{description}
@@ -98,12 +85,13 @@ The installation consists of a part equal for all platforms, and a part specific
   \end{description}
 \end{itemize}
 
-\subsection{OS X 10.6 (tested on: OS X 10.6.8)}
+\subsection{OS X 10.8 (tested on: OS X 10.8.4)}
 \begin{itemize}
-  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation).
+  \item Run (from the command line): \texttt{cabal update}.
   \item Open, in your favourite text editor, \texttt{\$HOME/.cabal/config} and make sure the \texttt{documentation} line is uncommented and set to \texttt{True}. If this is not the case, change the file accordingly, and save.
-  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
+  \item Run (form the command line): \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}
+  \item Run (from the command line): \texttt{cabal install twentefp}.
   \item Open (or create if it does not exist) in your favourite text editor \texttt{\$HOME/.ghci}.
   \item Add the following four lines to this file, and save it:
   \begin{description}
@@ -113,14 +101,15 @@ The installation consists of a part equal for all platforms, and a part specific
   \end{description}
 \end{itemize}
 
-\subsection{Linux (tested on: Linux Mint Debian Edition (LMDE))}
+\subsection{Linux (tested on: Linux Mint Debian Edition (LMDE) in VirtualBox)}
 \begin{itemize}
-  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation), and run \texttt{cabal update} from the command line.
+  \item Make sure that the \texttt{cabal} binary can be found in your \texttt{\$PATH} (should be done by the \emph{Haskell Platform} Installation).
+  \item Run (from the command line): \texttt{cabal update}.
   \item Open, in your favourite text editor, \texttt{\$HOME/.cabal/config}
   \item Uncomment the \texttt{documentation} line, and set it to \texttt{True}. Save the file.
   \item Install, in whichever way is the default for your distribution, the XRandr C-library (\texttt{apt-get install libxrandr-dev} on LMDE), it is required by the Haskell package \texttt{GLFW-b}.
-  \item Go to the directory where you unpacked the \texttt{gloss} package, and run (form the command line): \texttt{cabal install -{}-flags="-GLUT GLFW"}
-  \item Now go to the directory where you unpacked the \texttt{fpprac} package, and run (from the command line): \texttt{cabal install}.
+  \item Run (form the command line): \texttt{cabal install gloss -{}-flags="-GLUT GLFW"}
+  \item Run (from the command line): \texttt{cabal install twentefp}.
   \item Open (or create if it does not exist) in your favourite text editor \texttt{\$HOME/.ghci}.
   \item Add the following two lines to this file, and save it:
   \begin{description}
