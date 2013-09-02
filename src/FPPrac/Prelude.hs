@@ -18,12 +18,19 @@ where
 
 import Prelude hiding (length,(!!),replicate,take,drop,splitAt)
 import qualified Prelude as P
-import Data.Char (ord,chr)
+import qualified Data.Char (ord,chr)
 
 import FPPrac.Prelude.Number
 
 default (Number)
 infixl 9 !!
+
+ord :: Char -> Number
+ord = I . toInteger . Data.Char.ord
+
+chr :: Number -> Char
+chr (I i) = Data.Char.chr (fromInteger i)
+chr n     = error $ "ord undefined for float: " ++ show n
 
 -- | /O(n)/. 'length' returns the length of a finite list as a 'Number'.
 length :: [a] -> Number
@@ -31,7 +38,7 @@ length = I . toInteger . P.length
 
 -- | List index (subscript) operator, starting from 0.
 (!!) :: [a] -> Number -> a
-xs !! (I i) = xs P.!! (fromInteger i)
+xs !! (I i) = xs P.!! fromInteger i
 _  !! _     = error "trying to index (!!) using a floating number"
 
 -- | 'replicate' @n x@ is a list of length @n@ with @x@ the value of
